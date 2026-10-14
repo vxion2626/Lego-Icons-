@@ -1,0 +1,15 @@
+# Los ficheros de texto se guardan con LF en el repositorio y en la copia de
+# trabajo. Sin esto, Git los convierte a CRLF en Windows y el HTML llega al
+# servidor con finales de línea de Windows.
+* text=auto eol=lf
+
+# Binarios: no tocar
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.pdf binary

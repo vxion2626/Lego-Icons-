@@ -1,0 +1,33 @@
+# Sistema operativo y editores
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+.idea/
+.vscode/
+
+# Node (las herramientas de tools/ se ejecutan con node, sin dependencias,
+# pero por si alguien instala algo localmente)
+node_modules/
+npm-debug.log*
+package-lock.json
+yarn.lock
+
+# Secretos: nunca deben llegar al repositorio
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Salidas de compilación
+build/
+dist/
+out/
+.next/
+.cache/
+
+# Salidas de las capturas de verificación visual
+render/
+*.local

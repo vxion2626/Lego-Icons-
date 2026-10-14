@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="es" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light">
+
+<!-- Sin JS el catálogo se ve igual: todo el contenido es HTML estatico.
+     La clase .js solo habilita los estados que dependen del script
+     (skeletons de imagen, animaciones de entrada). -->
+<script>document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/, 'js');</script>
+
+<!-- Puerta del preloader de ladrillos. Va en la <head> y es un script clásico
+     bloqueante a propósito: tiene que decidir ANTES de que se pinte el primer
+     fotograma, o se vería un destello de la web antes del carbón.
+
+     Se marca el atributo, no una clase, porque `tools/check.js` avisa de las
+     clases del CSS que no aparecen en el HTML y este estado solo existe en
+     memoria: un atributo no falsea ese recuento.
+
+     Tres formas de NO jugar, en este orden:
+        · sin JavaScript no hay script y el atributo nunca se pone;
+        · con `prefers-reduced-motion` se quita en el acto;
+        · si ya se vio en esta sesión, `sessionStorage` lo salta.
+
+     Y el reloj de seguridad: si `assets/js/preloader.js` no llega a ejecutarse,
+     este temporizador destapa la web. Antes ese reloj cubría la descarga de
+     Three.js y por eso estaba en 5,2 s. El preloader actual es CSS y un módulo
+     local sin dependencias, así que el reloj ya no cubre ninguna descarga
+     externa: se queda como red de seguridad contra un módulo que no arrive, y
+     por eso puede ser generoso. Aun así se mantiene por debajo del de 9 s del
+     propio módulo, para que el que llegue primero sea el que aparta la pantalla
+     y no dependa del orden en que se descargaron los dos. Por eso mira
+     `data-intro-live`: en cuanto el módulo empieza a animar deja de mandar
+     sobre él, y así no puede cortar el preloader por la mitad. Va en el
+     <script> y no en el módulo justamente por eso: si el preloader no arranca,
+     el único código que queda es el que lo aparta. -->
+<script>
+(function () {
+  var KEY = 'lego-intro-seen';
+  var FAILSAFE = 5200;
+  var root = document.documentElement;
+  try {
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced || sessionStorage.getItem(KEY)) return;
+    sessionStorage.setItem(KEY, '1');
+  } catch (e) {
+    /* Sin sessionStorage (modo privado, cookies bloqueadas) no se puede
+       recordar la visita, pero el preloader tampoco debe dejar la web cerrada:
+       se juega esta vez y se pasa. */
+  }
+  root.setAttribute('data-intro', 'pending');
+  window.setTimeout(function () {
+    if (!root.hasAttribute('data-intro-live')) root.removeAttribute('data-intro');
+  }, FAILSAFE);
+})();
+</script>
+
+<!-- site:HEAD:start -->
+<title>LEGO Icons · 18 sets de construcción para adultos</title>
+<meta name="description" content="18 sets de LEGO® para adultos con piezas, edad, tiempo de montaje y precio oficial de referencia. Sin sorpresas ni precios inventados.">
+<link rel="canonical" href="https://vxion2626.github.io/lego-icons">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="LEGO Icons">
+<meta property="og:locale" content="es_ES">
+<meta property="og:url" content="https://vxion2626.github.io/lego-icons">
+<meta property="og:title" content="LEGO Icons · 18 sets de construcción para adultos">
+<meta property="og:description" content="18 sets de LEGO® para adultos con piezas, edad, tiempo de montaje y precio oficial de referencia. Sin sorpresas ni precios inventados.">
+<meta property="og:image" content="https://vxion2626.github.io/lego-icons/assets/img/og-cover.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="LEGO Icons: catálogo de sets de construcción de colección para adultos.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@tudominio">
+<meta name="twitter:creator" content="@tudominio">
+<meta name="twitter:title" content="LEGO Icons · 18 sets de construcción para adultos">
+<meta name="twitter:description" content="18 sets de LEGO® para adultos con piezas, edad, tiempo de montaje y precio oficial de referencia. Sin sorpresas ni precios inventados.">
+<meta name="twitter:image" content="https://vxion2626.github.io/lego-icons/assets/img/og-cover.png">
+<meta name="twitter:image:alt" content="LEGO Icons: catálogo de sets de construcción para adultos.">
+<!-- site:HEAD:end -->
+
+<meta name="robots" content="index, follow, max-image-preview:large">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23d01012'/%3E%3Cpath d='M7 12h18v4H7zM7 18h18v4H7z'/%3E%3Cpath d='M10 9h4v3h-4zM17 9h4v3h-4zM13.5 15.5h4v3h-4zM10 21h4v2h-4zM17 21h4v2h-4z' fill='%23ffffff'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Bricolage+Grotesque:opsz,wght@12..96,200..800&amp;family=Instrument+Sans:wght@400..700&amp;display=swap">
+<link rel="stylesheet" href="assets/css/styles.css">
+
+<!-- site:JSONLD:start -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://vxion2626.github.io/lego-icons/#organization",
+      "name": "Brick Studio Editorial S.L.",
+      "url": "https://vxion2626.github.io/lego-icons/",
+      "email": "hola@tudominio.com",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Calle de la Ejemplo 00",
+        "addressLocality": "Madrid",
+        "addressRegion": "Madrid",
+        "postalCode": "28001",
+        "addressCountry": "ES"
+      },
+      "description": "Catálogo de sets de construcción de colección para adultos: arquitectura, vehículos, cultura pop y botánica."
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://vxion2626.github.io/lego-icons/#website",
+      "url": "https://vxion2626.github.io/lego-icons/",
+      "name": "LEGO Icons",
+      "inLanguage": "es-ES",
+      "publisher": {
+        "@id": "https://vxion2626.github.io/lego-icons/#organization"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://vxion2626.github.io/lego-icons/#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Inicio",
+          "item": "https://vxion2626.github.io/lego-icons/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Catálogo",
+          "item": "https://vxion2626.github.io/lego-icons/catalogo.html"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Temas",
+          "item": "https://vxion2626.github.io/lego-icons/temas.html"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Guía y FAQ",
+          "item": "https://vxion2626.github.io/lego-icons/preguntas-frecuentes.html"
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "name": "Transparencia",
+          "item": "https://vxion2626.github.io/lego-icons/transparencia.html"
+        }
+      ]
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://vxion2626.github.io/lego-icons/#webpage",
+      "url": "https://vxion2626.github.io/lego-icons",
+      "name": "LEGO Icons · Catálogo de sets de construcción para adultos",
+      "description": "Catálogo de 18 sets de LEGO® para adultos: arquitectura, vehículos, cultura pop, botánica, arte. Piezas, precio de referencia y disponibilidad.",
+      "isPartOf": {
+        "@id": "https://vxion2626.github.io/lego-icons/#website"
+      },
+      "inLanguage": "es-ES"
+    }
+  ]
+}
+</script>
+<!-- site:JSONLD:end -->
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Saltar al contenido</a>
+
+<!-- Preloader de ladrillos. Solo existe en la portada y solo se ve una vez por
+     sesión. Va fuera de los bloques `site:` para que `sync-config` no lo toque
+     al regenerar las páginas, y con `aria-hidden` porque repite el nombre que
+     ya está en el <title> y en la cabecera: para un lector de pantalla sería
+     ruido, no información.
+
+     Los ocho ladrillos no llevan tetones en el marcado; los dibuja el CSS con
+     `::before` y `::after`. Son dieciséis nodos que no aportan nada al
+     lector de pantalla —todo el overlay es `aria-hidden`— y que se
+     desincronizarían del CSS en cuanto alguien tocara el marcado.
+
+     Si `assets/js/preloader.js` no llega a ejecutarse, esto se queda como un
+     muro de ladrillos detrás del reloj de seguridad de la <head>, que lo retira
+     a los 5,2 s.
+
+     No hace falta esconder la web con `visibility: hidden`: el overlay es opaco
+     y ocupa todo el viewport, así que la tapa sin necesidad de que el navegador
+     deje de pintarla. Y no conviene hacerlo, porque lo invisible no cuenta como
+     pintado y el LCP de la portada se hundía hasta el final del preloader. Lo
+     único que hay que impedir es que se pueda usar lo que hay debajo, y para
+     eso está el script `inert` del final del <body>. -->
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="preloader__inner">
+    <div class="preloader__wall">
+      <span class="preloader-brick"></span>
+      <span class="preloader-brick"></span>
+      <span class="preloader-brick"></span>
+      <span class="preloader-brick"></span>
+      <span class="preloader-brick"></span>
+      <span class="preloader-brick"></span>
+      <span class="preloader-brick"></span>
+      <span class="preloader-brick"></span>
+    </div>
+    <p class="preloader-word" id="preloader-word"><span>LEGO</span> <span>Icons</span></p>
+  </div>
+</div>
+
+<svg class="u-sprite" width="0" height="0" aria-hidden="true" focusable="false">
+  <symbol id="ic-brick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="2.5" y="9" width="9" height="6" rx="1.2"/><rect x="12.5" y="9" width="9" height="6" rx="1.2"/>
+    <rect x="2.5" y="16" width="9" height="6" rx="1.2"/><rect x="12.5" y="16" width="9" height="6" rx="1.2"/>
+    <path d="M5 4.5h3.5V8H5zM11 4.5h3.5V8H11z"/>
+  </symbol>
+  <symbol id="ic-brick-3d" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+    <path d="M3 8 12 3l9 5-9 5Z" opacity=".62"/>
+    <path d="M3 8l9 5v8l-9-5Z"/>
+    <path d="M12 13l9-5v8l-9 5Z" opacity=".78"/>
+    <path d="M9.75 8 7.5 9.25 5.25 8 7.5 6.75ZM14.25 10.5 12 11.75 9.75 10.5 12 9.25ZM14.25 5.5 12 6.75 9.75 5.5 12 4.25ZM18.75 8 16.5 9.25 14.25 8 16.5 6.75Z"/>
+  </symbol>
+  <symbol id="ic-check-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="9.2"/><path d="m8 12.2 2.8 2.8L16.2 9.4"/>
+  </symbol>
+  <symbol id="ic-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3.2 21.5 20H2.5z"/><path d="M12 9.5v5M12 17.4h.01"/>
+  </symbol>
+  <symbol id="ic-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4.5 12h15M13.5 6l6 6-6 6"/>
+  </symbol>
+  <symbol id="ic-building" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3.5 21.5V6.2L12 2.5l8.5 3.7v15.3z"/><path d="M8 21.5v-5h8v5M8 10h1.6M8 13h1.6M14.4 10H16M14.4 13H16M12 16.5V21"/>
+  </symbol>
+  <symbol id="ic-car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M2.5 15.5v-3l2-4.5h9l3.5 4.5 4.5 1.2v3.3"/><path d="M2.5 15.5h19"/><circle cx="7" cy="17.4" r="2.1"/><circle cx="17" cy="17.4" r="2.1"/>
+  </symbol>
+  <symbol id="ic-rocket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 2.5c3.2 2.6 4.8 6 4.8 9.6l-1.6 3.4H8.8L7.2 12.1C7.2 8.5 8.8 5.1 12 2.5z"/><circle cx="12" cy="9.6" r="1.8"/>
+    <path d="m8.8 15.5-2.8 5 3.4-1.4M15.2 15.5l2.8 5-3.4-1.4M10.6 18.5h2.8l-.4 3h-2z"/>
+  </symbol>
+  <symbol id="ic-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 4c0 8.5-4.6 13-10.5 13H5.5C5.5 8.6 10.4 4 20 4z"/><path d="M4 20c2.5-5 6-8.5 10.5-10.5"/>
+  </symbol>
+  <symbol id="ic-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 4.5 4.5"/>
+  </symbol>
+  <symbol id="ic-brush" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14.5 3.5 20.5 9.5 12 18H6v-6z"/><path d="m11.5 6.5 6 6"/><path d="M6 18c-1.4 0-2.5 1-2.5 2.4 0 1 .5 1.6 1 2.1"/>
+  </symbol>
+  <symbol id="ic-external" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 4.5h5.5V10"/><path d="M19.5 4.5 11 13"/>
+    <path d="M18 14v4.2a1.8 1.8 0 0 1-1.8 1.8H5.3a1.8 1.8 0 0 1-1.8-1.8V7.8A1.8 1.8 0 0 1 5.3 6H10"/>
+  </symbol>
+  <symbol id="ic-cube" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 2.8 20.5 7.4v9.2L12 21.2 3.5 16.6V7.4z"/><path d="M3.5 7.4 12 12l8.5-4.6M12 12v9.2"/>
+  </symbol>
+  <symbol id="ic-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="9.2"/><path d="M12 6.8V12l3.4 2"/>
+  </symbol>
+  <symbol id="ic-box3d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3.4 19.4 7.5v9L12 20.6 4.6 16.5v-9z"/><path d="M4.6 7.5 12 11.7l7.4-4.2M12 11.7v8.9"/>
+    <path d="M8.3 5.5 15.7 9.6"/>
+  </symbol>
+  <symbol id="ic-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>
+  </symbol>
+</svg>
+
+<header class="header" id="site-header" data-stuck="false">
+  <div class="header__inner">
+    <a class="brand" href="#top" aria-label="LEGO Icons, ir al inicio">
+      <span class="brand__mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#ic-brick"></use></svg>
+      </span>
+      <span>
+        <span class="brand__name">LEGO Icons</span>
+        <span class="brand__sub">Catálogo de colección</span>
+      </span>
+    </a>
+
+    <nav class="nav" aria-label="Navegación principal">
+      <ul class="nav__list">
+        <!-- site:NAV:start -->
+    <li><a class="nav__link is-current" href="index.html" aria-current="page">Inicio</a></li>
+    <li><a class="nav__link" href="catalogo.html">Catálogo</a></li>
+    <li><a class="nav__link" href="temas.html">Temas</a></li>
+    <li><a class="nav__link" href="preguntas-frecuentes.html">Guía y FAQ</a></li>
+    <li><a class="nav__link" href="transparencia.html">Transparencia</a></li>
+<!-- site:NAV:end -->
+    </ul>
+    </nav>
+
+        <!-- site:HEADER_CTA:start -->
+<a class="btn btn--brand header__cta" href="catalogo.html">Ver el catálogo</a>
+<!-- site:HEADER_CTA:end -->
+<!-- site:HEADER_CTA:end -->
+<!-- site:HEADER_CTA:end -->
+
+    <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-drawer">
+      <span class="sr-only">Abrir menú de navegación</span>
+      <span class="nav-toggle__bars" aria-hidden="true"><span></span><span></span><span></span></span>
+    </button>
+  </div>
+
+  <nav class="nav-drawer" id="nav-drawer" aria-label="Navegación móvil" hidden>
+    <!-- site:NAV_DRAWER:start -->
+  <a href="index.html" aria-current="page">Inicio</a>
+  <a href="catalogo.html">Catálogo</a>
+  <a href="temas.html">Temas</a>
+  <a href="preguntas-frecuentes.html">Guía y FAQ</a>
+  <a href="transparencia.html">Transparencia</a>
+<!-- site:NAV_DRAWER:end -->
+    <a class="btn btn--brand btn--block nav-drawer__cta" href="catalogo.html">Ver el catálogo</a>
+</nav>
+
+  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+</header>
+
+<main id="main">
+  <span id="top" tabindex="-1"></span>
+
+  <!-- ==================================================================
+       1 · HERO
+       ================================================================== -->
+  <section class="hero hero--catalog" aria-labelledby="hero-title">
+    <div class="wrap hero__grid">
+      <div class="hero__copy stack stack-5">
+        <p class="eyebrow">Catálogo de colección para adultos</p>
+
+        <h1 class="hero__title" id="hero-title">
+          <!-- site:HERO_TITLE:start -->
+<span class="line">18 sets para reconectar con lo que te apasiona.</span>
+<span class="line grad-mark">Tus recuerdos, pieza a pieza.</span>
+<!-- site:HERO_TITLE:end -->
+        </h1>
+
+        <p class="lead hero__sub">
+          <!-- site:HERO_SUB:start -->
+Dieciocho historias para construir con calma. Desde arquitectura y vehículos
+míticos hasta botánica y cultura pop. Te detallamos el número de piezas, edad,
+tiempo estimado de montaje y precio oficial de referencia de cada set, con
+absoluta transparencia y sin sorpresas.
+<!-- site:HERO_SUB:end -->
+        </p>
+
+        <div class="hero__actions">
+          <a class="btn btn--brand" href="catalogo.html">
+            Ver el catálogo
+            <svg class="btn__ico" aria-hidden="true"><use href="#ic-arrow"></use></svg>
+          </a>
+          <a class="btn btn--ghost" href="transparencia.html">Qué es este sitio</a>
+        </div>
+
+        <!-- site:HERO_FACTS:start -->
+<ul class="hero__facts" role="list">
+  <li>
+    <span class="hero__fact-n">18</span>
+    <span class="hero__fact-l">sets en catálogo</span>
+  </li>
+  <li>
+    <span class="hero__fact-n">5</span>
+    <span class="hero__fact-l">categorías</span>
+  </li>
+  <li>
+    <span class="hero__fact-n">44.838</span>
+    <span class="hero__fact-l">piezas en total</span>
+  </li>
+  <li>
+    <span class="hero__fact-n">0</span>
+    <span class="hero__fact-l">encargos por aquí</span>
+  </li>
+</ul>
+<!-- site:HERO_FACTS:end -->
+      </div>
+
+      <div class="hero__frame imgbox" data-img data-img-label="Catálogo LEGO Icons">
+        <span class="imgbox__skeleton" aria-hidden="true"></span>
+        <img class="imgbox__el" src="assets/img/hero-pyramid.jpg" width="1024" height="575" fetchpriority="high" decoding="async"
+             alt="Ilustración de la pirámide de LEGO Icons construida con piezas de colección.">
+        <noscript>
+          <span class="imgbox__fallback-note">Ilustración de la pirámide. <a href="assets/img/hero-pyramid.jpg">Abrir la imagen</a>.</span>
+        </noscript>
+        <p class="hero__tag hero__tag--tl">
+          <span class="pill__dot" style="color:var(--red)" aria-hidden="true"></span>
+          Catálogo <b>2026</b>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       2 · DESTACADOS
+       ================================================================== -->
+  <section class="section section--alt" id="destacados" aria-labelledby="destacados-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Destacados</p>
+        <h2 id="destacados-title">Un set por estilo</h2>
+        <p class="section-head__text">El más grande de cada categoría. Si no sabes por dónde empezar, empieza por el que más te guste de la foto.</p>
+      </div>
+
+      <div class="set-grid set-grid--featured">
+        <!-- site:FEATURED:start -->
+    <article class="glass featurecard reveal" id="destacado-21065" style="--delay:0ms"
+             data-set-id="21065" data-category="arquitectura"
+             data-name="sagrada família"
+             data-pieces="12060"
+             data-price="749.99"
+             data-build-hours="~36-60 h (estimadas)"
+             data-year="2026" data-availability="PreOrder"
+             aria-labelledby="destacado-21065-title">
+      <div class="setcard__media imgbox" data-img data-img-label="Set 21065">
+        <span class="imgbox__skeleton" aria-hidden="true"></span>
+        <img class="imgbox__el" src="assets/img/sets/21065.jpg" width="640" height="480" loading="lazy" decoding="async"
+             alt="Sagrada Família (set 21065), Arquitectura. Fotografía del set." data-img-has-source="false">
+        <noscript><span class="imgbox__fallback-note"><a href="assets/img/sets/21065.jpg">Abrir la imagen de Sagrada Família</a>.</span></noscript>
+        <p class="setcard__badge setcard__badge--soon">
+          Reserva anticipada
+        </p>
+      </div>
+      <div class="setcard__body">
+        <p class="setcard__cat">
+          <svg aria-hidden="true"><use href="#ic-building"></use></svg>
+          Arquitectura
+          <span class="setcard__ref">21065</span>
+        </p>
+        <h3 class="setcard__title" id="destacado-21065-title">Sagrada Família</h3>
+        <p class="setcard__summary">La basílica de Gaudí en Barcelona a escala de colección, con su fachada y sus pináculos.</p>
+        <ul class="setcard__meta" role="list">
+          <li>Set 21065 | 12.060 piezas</li>
+          <li>Desde 18 años</li>
+          <li>noviembre de 2026</li>
+          <li class="setcard__hours" title="Tiempo estimado a partir del número de piezas; no es un dato de LEGO">
+      <svg class="setcard__hours-ico" aria-hidden="true"><use href="#ic-clock"></use></svg>
+      <span>~36-60 h (estimadas)</span>
+    </li>
+        </ul>
+    <p class="setcard__price">
+      <span class="setcard__amount" data-price="749.99">749,99 €</span>
+      <span class="setcard__pricetag setcard__pricetag--unconfirmed" title="Precio oficial LEGO en EUR, sin confirmar en España">precio de referencia</span>
+    </p>
+        <a class="btn btn--primary setcard__cta" href="https://www.lego.com/en-us/product/sagrada-familia-21065"
+       target="_blank" rel="noopener sponsored"
+       aria-label="Ver Sagrada Família en la tienda oficial de LEGO (se abre en una pestaña nueva)">
+      Ver en Tienda Oficial LEGO®
+      <svg class="btn__ico" aria-hidden="true"><use href="#ic-external"></use></svg>
+    </a>
+        <button type="button" class="btn btn--ghost setcard__3d" data-viewer-3d
+            data-set-id="21065" data-set-name="Sagrada Família"
+            data-set-category="Arquitectura"
+            data-set-pieces="12060"
+            aria-haspopup="dialog"
+            aria-label="Explorar Sagrada Família en 3D (abre un visor emergeente)">
+      <svg class="btn__ico" aria-hidden="true"><use href="#ic-box3d"></use></svg>
+      Vista 3D
+    </button>
+      </div>
+    </article>
+
+    <article class="glass featurecard reveal" id="destacado-42143" style="--delay:0ms"
+             data-set-id="42143" data-category="vehiculos"
+             data-name="ferrari daytona sp3"
+             data-pieces="3778"
+             data-price="449.99"
+             data-build-hours="18-20 h"
+             data-year="2023" data-availability="InStock"
+             aria-labelledby="destacado-42143-title">
+      <div class="setcard__media imgbox" data-img data-img-label="Set 42143">
+        <span class="imgbox__skeleton" aria-hidden="true"></span>
+        <img class="imgbox__el" src="assets/img/sets/42143.jpg" width="640" height="480" loading="lazy" decoding="async"
+             alt="Ferrari Daytona SP3 (set 42143), Vehículos. Fotografía del set." data-img-has-source="false">
+        <noscript><span class="imgbox__fallback-note"><a href="assets/img/sets/42143.jpg">Abrir la imagen de Ferrari Daytona SP3</a>.</span></noscript>
+        <p class="setcard__badge setcard__badge--now">
+          Disponible
+        </p>
+      </div>
+      <div class="setcard__body">
+        <p class="setcard__cat">
+          <svg aria-hidden="true"><use href="#ic-car"></use></svg>
+          Vehículos
+          <span class="setcard__ref">42143</span>
+        </p>
+        <h3 class="setcard__title" id="destacado-42143-title">Ferrari Daytona SP3</h3>
+        <p class="setcard__summary">Ingeniería de precisión a escala 1:8, con caja de cambios secuencial de ocho velocidades, motor V12 de pistones móviles y puertas de mariposa.</p>
+        <ul class="setcard__meta" role="list">
+          <li>Set 42143 | 3778 piezas</li>
+          <li>Desde 18 años</li>
+          <li>2023</li>
+          <li class="setcard__hours" title="Tiempo de montaje indicado para este set">
+      <svg class="setcard__hours-ico" aria-hidden="true"><use href="#ic-clock"></use></svg>
+      <span>18-20 h</span>
+    </li>
+        </ul>
+    <p class="setcard__price">
+      <span class="setcard__amount" data-price="449.99">449,99 €</span>
+      <span class="setcard__pricetag setcard__pricetag--unconfirmed" title="Precio oficial LEGO en EUR, sin confirmar en España">precio de referencia</span>
+    </p>
+        <a class="btn btn--primary setcard__cta" href="https://www.lego.com/es-es/product/ferrari-daytona-sp3-42143"
+       target="_blank" rel="noopener sponsored"
+       aria-label="Ver Ferrari Daytona SP3 en la tienda oficial de LEGO (se abre en una pestaña nueva)">
+      Ver en Tienda Oficial LEGO®
+      <svg class="btn__ico" aria-hidden="true"><use href="#ic-external"></use></svg>
+    </a>
+        <button type="button" class="btn btn--ghost setcard__3d" data-viewer-3d
+            data-set-id="42143" data-set-name="Ferrari Daytona SP3"
+            data-set-category="Vehículos"
+            data-set-pieces="3778"
+            aria-haspopup="dialog"
+            aria-label="Explorar Ferrari Daytona SP3 en 3D (abre un visor emergeente)">
+      <svg class="btn__ico" aria-hidden="true"><use href="#ic-box3d"></use></svg>
+      Vista 3D
+    </button>
+      </div>
+    </article>
+
+    <article class="glass featurecard reveal" id="destacado-75192" style="--delay:0ms"
+             data-set-id="75192" data-category="cultura-pop"
+             data-name="millennium falcon ultimate collector series"
+             data-pieces="7541"
+             data-price="849.99"
+             data-build-hours="25-30 h"
+             data-year="2017" data-availability="InStock"
+             aria-labelledby="destacado-75192-title">
+      <div class="setcard__media imgbox" data-img data-img-label="Set 75192">
+        <span class="imgbox__skeleton" aria-hidden="true"></span>
+        <img class="imgbox__el" src="assets/img/sets/75192.jpg" width="640" height="480" loading="lazy" decoding="async"
+             alt="Millennium Falcon Ultimate Collector Series (set 75192), Cultura pop. Fotografía del set." data-img-has-source="false">
+        <noscript><span class="imgbox__fallback-note"><a href="assets/img/sets/75192.jpg">Abrir la imagen de Millennium Falcon Ultimate Collector Series</a>.</span></noscript>
+        <p class="setcard__badge setcard__badge--now">
+          Disponible
+        </p>
+      </div>
+      <div class="setcard__body">
+        <p class="setcard__cat">
+          <svg aria-hidden="true"><use href="#ic-rocket"></use></svg>
+          Cultura pop
+          <span class="setcard__ref">75192</span>
+        </p>
+        <h3 class="setcard__title" id="destacado-75192-title">Millennium Falcon Ultimate Collector Series</h3>
+        <p class="setcard__summary">El modelo LEGO Star Wars más grande jamás creado, con detalles interiores minuciosos, armas láser y las tripulaciones clásica y moderna.</p>
+        <ul class="setcard__meta" role="list">
+          <li>Set 75192 | 7541 piezas</li>
+          <li>Desde 18 años</li>
+          <li>2017</li>
+          <li class="setcard__hours" title="Tiempo de montaje indicado para este set">
+      <svg class="setcard__hours-ico" aria-hidden="true"><use href="#ic-clock"></use></svg>
+      <span>25-30 h</span>
+    </li>
+        </ul>
+    <p class="setcard__price">
+      <span class="setcard__amount" data-price="849.99">849,99 €</span>
+      <span class="setcard__pricetag setcard__pricetag--unconfirmed" title="Precio oficial LEGO en EUR, sin confirmar en España">precio de referencia</span>
+    </p>
+        <a class="btn btn--primary setcard__cta" href="https://www.lego.com/es-es/product/millennium-falcon-75192"
+       target="_blank" rel="noopener sponsored"
+       aria-label="Ver Millennium Falcon Ultimate Collector Series en la tienda oficial de LEGO (se abre en una pestaña nueva)">
+      Ver en Tienda Oficial LEGO®
+      <svg class="btn__ico" aria-hidden="true"><use href="#ic-external"></use></svg>
+    </a>
+        <button type="button" class="btn btn--ghost setcard__3d" data-viewer-3d
+            data-set-id="75192" data-set-name="Millennium Falcon Ultimate Collector Series"
+            data-set-category="Cultura pop"
+            data-set-pieces="7541"
+            aria-haspopup="dialog"
+            aria-label="Explorar Millennium Falcon Ultimate Collector Series en 3D (abre un visor emergeente)">
+      <svg class="btn__ico" aria-hidden="true"><use href="#ic-box3d"></use></svg>
+      Vista 3D
+    </button>
+      </div>
+    </article>
+
+    <article class="glass featurecard reveal" id="destacado-10281" style="--delay:0ms"
+             data-set-id="10281" data-category="botanica"
+             data-name="lego icons árbol bonsái"
+             data-pieces="878"
+             data-price="49.99"
+             data-build-hours="3-5 h"
+             data-year="2021" data-availability="InStock"
+             aria-labelledby="destacado-10281-title">
+      <div class="setcard__media imgbox" data-img data-img-label="Set 10281">
+        <span class="imgbox__skeleton" aria-hidden="true"></span>
+        <img class="imgbox__el" src="assets/img/sets/10281.jpg" width="640" height="480" loading="lazy" decoding="async"
+             alt="Lego Icons Árbol Bonsái (set 10281), Botánica. Fotografía del set." data-img-has-source="false">
+        <noscript><span class="imgbox__fallback-note"><a href="assets/img/sets/10281.jpg">Abrir la imagen de Lego Icons Árbol Bonsái</a>.</span></noscript>
+        <p class="setcard__badge setcard__badge--now">
+          Disponible
+        </p>
+      </div>
+      <div class="setcard__body">
+        <p class="setcard__cat">
+          <svg aria-hidden="true"><use href="#ic-leaf"></use></svg>
+          Botánica
+          <span class="setcard__ref">10281</span>
+        </p>
+        <h3 class="setcard__title" id="destacado-10281-title">Lego Icons Árbol Bonsái</h3>
+        <p class="setcard__summary">Una pieza de exhibición relajante, con hojas verdes intercambiables o flores de cerezo rosadas compuestas por pequeñas ranas LEGO.</p>
+        <ul class="setcard__meta" role="list">
+          <li>Set 10281 | 878 piezas</li>
+          <li>Desde 18 años</li>
+          <li>2021</li>
+          <li class="setcard__hours" title="Tiempo de montaje indicado para este set">
+      <svg class="setcard__hours-ico" aria-hidden="true"><use href="#ic-clock"></use></svg>
+      <span>3-5 h</span>
+    </li>
+        </ul>
+    <p class="setcard__price">
+      <span class="setcard__amount" data-price="49.99">49,99 €</span>
+      <span class="setcard__pricetag setcard__pricetag--unconfirmed" title="Precio oficial LEGO en EUR, sin confirmar en España">precio de referencia</span>
+    </p>
+        <a class="btn btn--primary setcard__cta" href="https://www.lego.com/es-es/product/bonsai-tree-10281"
+       target="_blank" rel="noopener sponsored"
+       aria-label="Ver Lego Icons Árbol Bonsái en la tienda oficial de LEGO (se abre en una pestaña nueva)">
+      Ver en Tienda Oficial LEGO®
+      <svg class="btn__ico" aria-hidden="true"><use href="#ic-external"></use></svg>
+    </a>
+        <button type="button" class="btn btn--ghost setcard__3d" data-viewer-3d
+            data-set-id="10281" data-set-name="Lego Icons Árbol Bonsái"
+            data-set-category="Botánica"
+            data-set-pieces="878"
+            aria-haspopup="dialog"
+            aria-label="Explorar Lego Icons Árbol Bonsái en 3D (abre un visor emergeente)">
+      <svg class="btn__ico" aria-hidden="true"><use href="#ic-box3d"></use></svg>
+      Vista 3D
+    </button>
+      </div>
+    </article>
+
+    <article class="glass featurecard reveal" id="destacado-31208" style="--delay:0ms"
+             data-set-id="31208" data-category="arte"
+             data-name="hokusai: la gran ola"
+             data-pieces="1810"
+             data-price="99.99"
+             data-build-hours="5-7 h"
+             data-year="2022" data-availability="InStock"
+             aria-labelledby="destacado-31208-title">
+      <div class="setcard__media imgbox" data-img data-img-label="Set 31208">
+        <span class="imgbox__skeleton" aria-hidden="true"></span>
+        <img class="imgbox__el" src="assets/img/sets/31208.jpg" width="640" height="480" loading="lazy" decoding="async"
+             alt="Hokusai: La Gran Ola (set 31208), Arte. Fotografía del set." data-img-has-source="false">
+        <noscript><span class="imgbox__fallback-note"><a href="assets/img/sets/31208.jpg">Abrir la imagen de Hokusai: La Gran Ola</a>.</span></noscript>
+        <p class="setcard__badge setcard__badge--now">
+          Disponible
+        </p>
+      </div>
+      <div class="setcard__body">
+        <p class="setcard__cat">
+          <svg aria-hidden="true"><use href="#ic-brush"></use></svg>
+          Arte
+          <span class="setcard__ref">31208</span>
+        </p>
+        <h3 class="setcard__title" id="destacado-31208-title">Hokusai: La Gran Ola</h3>
+        <p class="setcard__summary">La xilografía japonesa reconstruida con capas de ladrillo, en tres dimensiones y con el zebrillo de la cresta hecho con piezas distintas.</p>
+        <ul class="setcard__meta" role="list">
+          <li>Set 31208 | 1810 piezas</li>
+          <li>Desde 18 años</li>
+          <li>2022</li>
+          <li class="setcard__hours" title="Tiempo de montaje indicado para este set">
+      <svg class="setcard__hours-ico" aria-hidden="true"><use href="#ic-clock"></use></svg>
+      <span>5-7 h</span>
+    </li>
+        </ul>
+    <p class="setcard__price">
+      <span class="setcard__amount" data-price="99.99">99,99 €</span>
+      <span class="setcard__pricetag setcard__pricetag--unconfirmed" title="Precio oficial LEGO en EUR, sin confirmar en España">precio de referencia</span>
+    </p>
+        <a class="btn btn--primary setcard__cta" href="https://www.lego.com/es-es/product/hokusai-the-great-wave-31208"
+       target="_blank" rel="noopener sponsored"
+       aria-label="Ver Hokusai: La Gran Ola en la tienda oficial de LEGO (se abre en una pestaña nueva)">
+      Ver en Tienda Oficial LEGO®
+      <svg class="btn__ico" aria-hidden="true"><use href="#ic-external"></use></svg>
+    </a>
+        <button type="button" class="btn btn--ghost setcard__3d" data-viewer-3d
+            data-set-id="31208" data-set-name="Hokusai: La Gran Ola"
+            data-set-category="Arte"
+            data-set-pieces="1810"
+            aria-haspopup="dialog"
+            aria-label="Explorar Hokusai: La Gran Ola en 3D (abre un visor emergeente)">
+      <svg class="btn__ico" aria-hidden="true"><use href="#ic-box3d"></use></svg>
+      Vista 3D
+    </button>
+      </div>
+    </article>
+<!-- site:FEATURED:end -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       3 · ADELANTO DEL CATÁLOGO
+       ================================================================== -->
+  <section class="section" id="catalogo" aria-labelledby="catalogo-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Catálogo</p>
+        <h2 id="catalogo-title">Un adelanto, sin las dieciocho fichas.</h2>
+      </div>
+
+      <p class="section-head__text">Los 18 sets están repartidos en cinco estilos. Estos son los cuatro más grandes; el resto, con filtros y ordenación, en su página.</p>
+
+      <!-- site:CATALOG_PREVIEW:start -->
+    <div class="set-grid set-grid--preview">
+      <article class="glass setcard reveal" id="set-21065" style="--delay:0ms"
+               data-set-id="21065" data-category="arquitectura"
+               data-name="sagrada família"
+               data-pieces="12060"
+               data-price="749.99"
+               data-build-hours="~36-60 h (estimadas)"
+               data-year="2026" data-availability="PreOrder"
+               aria-labelledby="set-21065-title">
+        <div class="setcard__media imgbox" data-img data-img-label="Set 21065">
+          <span class="imgbox__skeleton" aria-hidden="true"></span>
+          <img class="imgbox__el" src="assets/img/sets/21065.jpg" width="640" height="480" loading="lazy" decoding="async"
+               alt="Sagrada Família (set 21065), Arquitectura. Fotografía del set." data-img-has-source="false">
+          <noscript><span class="imgbox__fallback-note"><a href="assets/img/sets/21065.jpg">Abrir la imagen de Sagrada Família</a>.</span></noscript>
+          <p class="setcard__badge setcard__badge--soon">
+            Reserva anticipada
+          </p>
+        </div>
+        <div class="setcard__body">
+          <p class="setcard__cat">
+            <svg aria-hidden="true"><use href="#ic-building"></use></svg>
+            Arquitectura
+            <span class="setcard__ref">21065</span>
+          </p>
+          <h3 class="setcard__title" id="set-21065-title">Sagrada Família</h3>
+          <p class="setcard__summary">La basílica de Gaudí en Barcelona a escala de colección, con su fachada y sus pináculos.</p>
+          <ul class="setcard__meta" role="list">
+            <li>Set 21065 | 12.060 piezas</li>
+            <li>Desde 18 años</li>
+            <li>noviembre de 2026</li>
+            <li class="setcard__hours" title="Tiempo estimado a partir del número de piezas; no es un dato de LEGO">
+        <svg class="setcard__hours-ico" aria-hidden="true"><use href="#ic-clock"></use></svg>
+        <span>~36-60 h (estimadas)</span>
+      </li>
+          </ul>
+      <p class="setcard__price">
+        <span class="setcard__amount" data-price="749.99">749,99 €</span>
+        <span class="setcard__pricetag setcard__pricetag--unconfirmed" title="Precio oficial LEGO en EUR, sin confirmar en España">precio de referencia</span>
+      </p>
+          <a class="btn btn--primary setcard__cta" href="https://www.lego.com/en-us/product/sagrada-familia-21065"
+         target="_blank" rel="noopener sponsored"
+         aria-label="Ver Sagrada Família en la tienda oficial de LEGO (se abre en una pestaña nueva)">
+        Ver en Tienda Oficial LEGO®
+        <svg class="btn__ico" aria-hidden="true"><use href="#ic-external"></use></svg>
+      </a>
+          <button type="button" class="btn btn--ghost setcard__3d" data-viewer-3d
+              data-set-id="21065" data-set-name="Sagrada Família"
+              data-set-category="Arquitectura"
+              data-set-pieces="12060"
+              aria-haspopup="dialog"
+              aria-label="Explorar Sagrada Família en 3D (abre un visor emergeente)">
+        <svg class="btn__ico" aria-hidden="true"><use href="#ic-box3d"></use></svg>
+        Vista 3D
+      </button>
+        </div>
+      </article>
+      <article class="glass setcard reveal" id="set-21066" style="--delay:60ms"
+               data-set-id="21066" data-category="arquitectura"
+               data-name="new york city"
+               data-pieces="1465"
+               data-price=""
+               data-build-hours="~4-7 h (estimadas)"
+               data-year="2026" data-availability="PreOrder"
+               aria-labelledby="set-21066-title">
+        <div class="setcard__media imgbox" data-img data-img-label="Set 21066">
+          <span class="imgbox__skeleton" aria-hidden="true"></span>
+          <img class="imgbox__el" src="assets/img/sets/21066.jpg" width="640" height="480" loading="lazy" decoding="async"
+               alt="New York City (set 21066), Arquitectura. Fotografía del set." data-img-has-source="false">
+          <noscript><span class="imgbox__fallback-note"><a href="assets/img/sets/21066.jpg">Abrir la imagen de New York City</a>.</span></noscript>
+          <p class="setcard__badge setcard__badge--soon">
+            Reserva anticipada
+          </p>
+        </div>
+        <div class="setcard__body">
+          <p class="setcard__cat">
+            <svg aria-hidden="true"><use href="#ic-building"></use></svg>
+            Arquitectura
+            <span class="setcard__ref">21066</span>
+          </p>
+          <h3 class="setcard__title" id="set-21066-title">New York City</h3>
+          <p class="setcard__summary">El horizonte de Manhattan a escala de colección, con sus edificios más reconocibles.</p>
+          <ul class="setcard__meta" role="list">
+            <li>Set 21066 | 1465 piezas</li>
+            <li>Desde 18 años</li>
+            <li>2026</li>
+            <li class="setcard__hours" title="Tiempo estimado a partir del número de piezas; no es un dato de LEGO">
+        <svg class="setcard__hours-ico" aria-hidden="true"><use href="#ic-clock"></use></svg>
+        <span>~4-7 h (estimadas)</span>
+      </li>
+          </ul>
+      <p class="setcard__price setcard__price--pending">
+        <span data-price="">Precio pendiente</span>
+        <span class="setcard__pricetag setcard__pricetag--unconfirmed">sin confirmar</span>
+      </p>
+          <a class="btn btn--primary setcard__cta" href="https://www.lego.com/en-us/product/new-york-city-the-big-apple-21066"
+         target="_blank" rel="noopener sponsored"
+         aria-label="Ver New York City en la tienda oficial de LEGO (se abre en una pestaña nueva)">
+        Ver en Tienda Oficial LEGO®
+        <svg class="btn__ico" aria-hidden="true"><use href="#ic-external"></use></svg>
+      </a>
+          <button type="button" class="btn btn--ghost setcard__3d" data-viewer-3d
+              data-set-id="21066" data-set-name="New York City"
+              data-set-category="Arquitectura"
+              data-set-pieces="1465"
+              aria-haspopup="dialog"
+              aria-label="Explorar New York City en 3D (abre un visor emergeente)">
+        <svg class="btn__ico" aria-hidden="true"><use href="#ic-box3d"></use></svg>
+        Vista 3D
+      </button>
+        </div>
+      </article>
+      <article class="glass setcard reveal" id="set-11383" style="--delay:120ms"
+               data-set-id="11383" data-category="arquitectura"
+               data-name="mayor manor"
+               data-pieces=""
+               data-price="109.99"
+               data-build-hours="Horas por confirmar"
+               data-year="2026" data-availability="PreOrder"
+               aria-labelledby="set-11383-title">
+        <div class="setcard__media imgbox" data-img data-img-label="Set 11383">
+          <span class="imgbox__skeleton" aria-hidden="true"></span>
+          <img class="imgbox__el" src="assets/img/sets/11383.jpg" width="640" height="480" loading="lazy" decoding="async"
+               alt="Mayor Manor (set 11383), Arquitectura. Fotografía del set." data-img-has-source="false">
+          <noscript><span class="imgbox__fallback-note"><a href="assets/img/sets/11383.jpg">Abrir la imagen de Mayor Manor</a>.</span></noscript>
+          <p class="setcard__badge setcard__badge--soon">
+            Reserva anticipada
+          </p>
+        </div>
+        <div class="setcard__body">
+          <p class="setcard__cat">
+            <svg aria-hidden="true"><use href="#ic-building"></use></svg>
+            Arquitectura
+            <span class="setcard__ref">11383</span>
+          </p>
+          <h3 class="setcard__title" id="set-11383-title">Mayor Manor</h3>
+          <p class="setcard__summary">Edificio de la serie de arquitectura para adultos.</p>
+          <ul class="setcard__meta" role="list">
+            <li>Set 11383 | Piezas por confirmar</li>
+            <li>Desde 18 años</li>
+            <li>septiembre de 2026</li>
+            <li class="setcard__hours" title="Tiempo estimado a partir del número de piezas; no es un dato de LEGO">
+        <svg class="setcard__hours-ico" aria-hidden="true"><use href="#ic-clock"></use></svg>
+        <span>Horas por confirmar</span>
+      </li>
+          </ul>
+      <p class="setcard__price">
+        <span class="setcard__amount" data-price="109.99">109,99 €</span>
+        <span class="setcard__pricetag setcard__pricetag--unconfirmed" title="Precio oficial LEGO en EUR, sin confirmar en España">precio de referencia</span>
+      </p>
+          <a class="btn btn--primary setcard__cta" href="https://www.lego.com/en-us/product/mayor-manor-11383"
+         target="_blank" rel="noopener sponsored"
+         aria-label="Ver Mayor Manor en la tienda oficial de LEGO (se abre en una pestaña nueva)">
+        Ver en Tienda Oficial LEGO®
+        <svg class="btn__ico" aria-hidden="true"><use href="#ic-external"></use></svg>
+      </a>
+          <button type="button" class="btn btn--ghost setcard__3d" data-viewer-3d
+              data-set-id="11383" data-set-name="Mayor Manor"
+              data-set-category="Arquitectura"
+              data-set-pieces=""
+              aria-haspopup="dialog"
+              aria-label="Explorar Mayor Manor en 3D (abre un visor emergeente)">
+        <svg class="btn__ico" aria-hidden="true"><use href="#ic-box3d"></use></svg>
+        Vista 3D
+      </button>
+        </div>
+      </article>
+      <article class="glass setcard reveal" id="set-11381" style="--delay:180ms"
+               data-set-id="11381" data-category="vehiculos"
+               data-name="jaguar e-type"
+               data-pieces="1673"
+               data-price="139.99"
+               data-build-hours="~5-8 h (estimadas)"
+               data-year="2026" data-availability="InStock"
+               aria-labelledby="set-11381-title">
+        <div class="setcard__media imgbox" data-img data-img-label="Set 11381">
+          <span class="imgbox__skeleton" aria-hidden="true"></span>
+          <img class="imgbox__el" src="assets/img/sets/11381.jpg" width="640" height="480" loading="lazy" decoding="async"
+               alt="Jaguar E-Type (set 11381), Vehículos. Fotografía del set." data-img-has-source="false">
+          <noscript><span class="imgbox__fallback-note"><a href="assets/img/sets/11381.jpg">Abrir la imagen de Jaguar E-Type</a>.</span></noscript>
+          <p class="setcard__badge setcard__badge--now">
+            Disponible
+          </p>
+        </div>
+        <div class="setcard__body">
+          <p class="setcard__cat">
+            <svg aria-hidden="true"><use href="#ic-car"></use></svg>
+            Vehículos
+            <span class="setcard__ref">11381</span>
+          </p>
+          <h3 class="setcard__title" id="set-11381-title">Jaguar E-Type</h3>
+          <p class="setcard__summary">El coupé deportivo inglés de los años sesenta, con su carrocería descapotable.</p>
+          <ul class="setcard__meta" role="list">
+            <li>Set 11381 | 1673 piezas</li>
+            <li>Desde 18 años</li>
+            <li>agosto de 2026</li>
+            <li class="setcard__hours" title="Tiempo estimado a partir del número de piezas; no es un dato de LEGO">
+        <svg class="setcard__hours-ico" aria-hidden="true"><use href="#ic-clock"></use></svg>
+        <span>~5-8 h (estimadas)</span>
+      </li>
+          </ul>
+      <p class="setcard__price">
+        <span class="setcard__amount" data-price="139.99">139,99 €</span>
+        <span class="setcard__pricetag setcard__pricetag--unconfirmed" title="Precio oficial LEGO en EUR, sin confirmar en España">precio de referencia</span>
+      </p>
+          <a class="btn btn--primary setcard__cta" href="https://www.lego.com/en-us/product/jaguar-e-type-11381"
+         target="_blank" rel="noopener sponsored"
+         aria-label="Ver Jaguar E-Type en la tienda oficial de LEGO (se abre en una pestaña nueva)">
+        Ver en Tienda Oficial LEGO®
+        <svg class="btn__ico" aria-hidden="true"><use href="#ic-external"></use></svg>
+      </a>
+          <button type="button" class="btn btn--ghost setcard__3d" data-viewer-3d
+              data-set-id="11381" data-set-name="Jaguar E-Type"
+              data-set-category="Vehículos"
+              data-set-pieces="1673"
+              aria-haspopup="dialog"
+              aria-label="Explorar Jaguar E-Type en 3D (abre un visor emergeente)">
+        <svg class="btn__ico" aria-hidden="true"><use href="#ic-box3d"></use></svg>
+        Vista 3D
+      </button>
+        </div>
+      </article>
+    </div>
+    <p class="catalog__more">
+      <a class="btn btn--brand btn--block" href="catalogo.html">
+        Ver los 18 sets del catálogo
+        <svg class="btn__ico" aria-hidden="true"><use href="#ic-arrow"></use></svg>
+      </a>
+    </p>
+<!-- site:CATALOG_PREVIEW:end -->
+      <p class="section-foot">
+        <a class="btn btn--ghost" href="catalogo.html">Ver los 18 sets
+          <svg class="btn__ico" aria-hidden="true"><use href="#ic-arrow"></use></svg>
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       4 · LA MARQUESINA
+       ------------------------------------------------------------------
+       Del diseño de referencia. Va entre el catálogo y la sección oscura
+       porque su trabajo es de tránsito: dos bloques claros separados por una
+       banda de color, para que el ojo no lea el catálogo y lo de abajo como
+       una sola tira larga.
+
+       Fuera de los bloques `site:` —no la genera `sync-config`— porque su
+       texto no sale de `site-data.js`: es una lista de motivos fijos que no
+       dependen de los sets. Si algún día tienen que venir de los datos, el
+       sitio al que pertenece es un bloque `site:MARQUEE`, no este HTML.
+
+La pista va duplicada. No es un descuido ni una copia: es lo que hace
+        posible el bucle sin costura, y por eso las dos copias tienen que ser
+        idénticas carácter a carácter y el salto de la animación tiene que ser
+        justo la mitad. Solo la segunda lleva `aria-hidden`: si el `aria-hidden`
+        estuviera en el contenedor —que es donde se puso la primera vez— no se
+        leería ni una, y entonces el `aria-hidden` de la copia de al lado no
+        tenía nada que ocultar y el comentario de arriba describía un
+        comportamiento que no existía.
+
+        El contenedor tampoco es un `<section>`: la banda no añade un nivel de
+        título al documento, y un `div` con `role="note"` no arrastra ninguno. -->
+  <div class="marquee" role="note" aria-label="El catálogo en cifras">
+    <div class="marquee__track">
+      <div class="marquee__set">
+        <p class="marquee__item"><span>18</span> sets</p>
+        <p class="marquee__item">44.838 <span>piezas</span></p>
+        <p class="marquee__item"><span>5</span> estilos</p>
+        <p class="marquee__item">para <span>adultos</span></p>
+        <p class="marquee__item">precios <span>sin</span> sorpresas</p>
+        <p class="marquee__item">filtros <span>de verdad</span></p>
+      </div>
+      <div class="marquee__set" aria-hidden="true">
+        <p class="marquee__item"><span>18</span> sets</p>
+        <p class="marquee__item">44.838 <span>piezas</span></p>
+        <p class="marquee__item"><span>5</span> estilos</p>
+        <p class="marquee__item">para <span>adultos</span></p>
+        <p class="marquee__item">precios <span>sin</span> sorpresas</p>
+        <p class="marquee__item">filtros <span>de verdad</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================
+       5 · LA SECCIÓN OSCURA: REVELADO Y POLAROIDS
+       ------------------------------------------------------------------
+       Sobre `.section--alt`, el carbón que ya existía. El orden va al revés
+       que en el diseño: primero el texto y después las fotos. Allí las
+       polaroids abrían el bloque; aquí lo abren porque son el contenido, y el
+       titular gigante es lo que sostiene la página mientras se llega a ellas.
+
+       El revelado lleva `aria-hidden` a propósito. Es una palabra decorativa
+       del tamaño de la pantalla y repetirla por el lector de pantalla no
+       informa de nada: el titular real está en el `h2` de al lado, que es lo
+       que debe leer quien usa esa vía. Lo mismo con la lista de fotos: el
+       `alt` de cada una describe la pieza, y el marco no añade nada. -->
+  <section class="section section--alt studs studs--dark section--dark" id="comunidad" aria-labelledby="comunidad-title">
+    <div class="wrap">
+      <p class="reveal-giant reveal" aria-hidden="true">Construido<br>por ti</p>
+
+      <div class="section-head">
+        <p class="eyebrow">Comunidad</p>
+        <h2 id="comunidad-title">Lo que sale de ahí fuera</h2>
+        <p class="section-head__text">Fotos de cracker que no son de cracker, y construcciones que no están en el catálogo. Si has montado algo y quieres que salga aquí, escríbenos.</p>
+      </div>
+
+      <!-- Los `style="--tilt: …"` son lo único que hay en el marcado y van uno
+           por foto a propósito: el ángulo es lo que hace que la rejilla parezca
+           una mesa y no una tabla, y si saliera de un `nth-child` del CSS dos
+           fotos acabarían con la misma inclinación y se vería la regla.
+
+           Las fotos todavía no existen y van por el mismo camino que las de los
+           sets: el contenedor `[data-img]` de `main.js` las sustituye con un
+           marco si el archivo no aparece, y `tools/check.js` avisa de ellas en
+           lugar de fallar. Sin ese mecanismo eran un ERROR del checker, no un
+           aviso, y con él la rejilla se ve entera aunque falten los cuatro
+           archivos. -->
+      <div class="polaroid-grid">
+        <figure class="polaroid" style="--tilt:-2.4deg">
+          <div class="imgbox polaroid__frame" data-img data-img-label="Foto de la comunidad: Sagrada Família">
+            <span class="imgbox__skeleton" aria-hidden="true"></span>
+            <img class="imgbox__el polaroid__img" src="assets/img/polaroid-01.jpg" width="480" height="480"
+                 loading="lazy" decoding="async" data-img-has-source="false"
+                 alt="Modelo propio de la Sagrada Família sobre una mesa, con piezas sueltas alrededor.">
+            <noscript><span class="imgbox__fallback-note"><a href="assets/img/polaroid-01.jpg">Abrir la foto de la Sagrada Família</a>.</span></noscript>
+          </div>
+          <figcaption class="polaroid__cap">Sagrada Família · 12.060</figcaption>
+        </figure>
+        <figure class="polaroid" style="--tilt:1.8deg">
+          <div class="imgbox polaroid__frame" data-img data-img-label="Foto de la comunidad: híbrido">
+            <span class="imgbox__skeleton" aria-hidden="true"></span>
+            <img class="imgbox__el polaroid__img" src="assets/img/polaroid-02.jpg" width="480" height="480"
+                 loading="lazy" decoding="async" data-img-has-source="false"
+                 alt="Construcción propia con piezas de distintos estilos mezcladas.">
+            <noscript><span class="imgbox__fallback-note"><a href="assets/img/polaroid-02.jpg">Abrir la foto del híbrido</a>.</span></noscript>
+          </div>
+          <figcaption class="polaroid__cap">Híbrido · sin instrucciones</figcaption>
+        </figure>
+        <figure class="polaroid" style="--tilt:-1.2deg">
+          <div class="imgbox polaroid__frame" data-img data-img-label="Foto de la comunidad: detalle">
+            <span class="imgbox__skeleton" aria-hidden="true"></span>
+            <img class="imgbox__el polaroid__img" src="assets/img/polaroid-03.jpg" width="480" height="480"
+                 loading="lazy" decoding="async" data-img-has-source="false"
+                 alt="Detalle de una construcción propia con piezas amarillas y rojas.">
+            <noscript><span class="imgbox__fallback-note"><a href="assets/img/polaroid-03.jpg">Abrir la foto del detalle</a>.</span></noscript>
+          </div>
+          <figcaption class="polaroid__cap">Detalle · tetón 2x4</figcaption>
+        </figure>
+        <figure class="polaroid" style="--tilt:2.6deg">
+          <div class="imgbox polaroid__frame" data-img data-img-label="Foto de la comunidad: tres módulos">
+            <span class="imgbox__skeleton" aria-hidden="true"></span>
+            <img class="imgbox__el polaroid__img" src="assets/img/polaroid-04.jpg" width="480" height="480"
+                 loading="lazy" decoding="async" data-img-has-source="false"
+                 alt="Construcción propia de tres módulos unidos, sobre fondo claro.">
+            <noscript><span class="imgbox__fallback-note"><a href="assets/img/polaroid-04.jpg">Abrir la foto de los tres módulos</a>.</span></noscript>
+          </div>
+          <figcaption class="polaroid__cap">Tres módulos · uno</figcaption>
+        </figure>
+      </div>
+
+      <p class="section-foot">
+        <a class="btn btn--primary" href="transparencia.html">Cómo elegimos qué sale aquí
+          <svg class="btn__ico" aria-hidden="true"><use href="#ic-arrow"></use></svg>
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ==================================================================
+       6 · TIENDAS
+       ------------------------------------------------------------------
+       Del diseño de referencia, con una diferencia deliberada: allí el mapa es
+       una imagen y las tiendas son puntos sobre ella. Aquí no hay imagen y el
+       plano está dibujado en CSS.
+
+       El bloque es `aria-labelledby` y la lista de tiendas va en texto real.
+       Un mapa del que solo se puede sacar información mirando no se puede
+       leer con lector de pantalla, no se puede buscar y no se puede traducir,
+       y en una página que se juega el SEO local eso es peor que no tener
+       mapa. Lo que hace falta saber —dónde está cada tienda y qué horario
+       tiene— está en la lista, en texto que se copia, se busca y se indexa.
+
+El plano de arriba lleva `aria-hidden` y las direcciones van en
+        `font-mono` porque son un dato, no una frase: se copian a un mapa.
+
+LOS DATOS DE LAS TIENDAS SON DE EJEMPLO y están en el mismo registro que
+        los datos legales de `site-data.js` —`Brick Studio Editorial S.L.`,
+        `B-00000000`, `Calle de la Ejemplo 00`—, o sea, un sitio de pruebas.
+        La primera versión de este bloque ponía aquí calles de verdad
+        (`Calle Alcalá 21`, `Avinguda Diagonal 512`, `Carrer de Russafa 41`) y
+        eso era lo peor que podía hacer: unas direcciones concretas y reales
+        con unos horarios concretos y reales se leen como un dato bueno, y
+        alguien acabaría yendo a una tienda que existe y no tiene nada que ver
+        con este catálogo. Ficticio del principio al final y con el mismo
+        patrón `de la Ejemplo NN` que el resto del sitio.
+
+        El texto de arriba también se corrigió por lo mismo: decía «los
+        comprobamos nosotros, no la tienda», y `site-data.js` afirma justo lo
+        contrario —«el precio que se muestra es de referencia y puede no
+        coincidir con el de la tienda»—. Con las dos versiones en el sitio, la
+        legal y la de aquí, se contradrían.
+
+        Las fotos de esta sección no existen todavía y van con el mismo
+        tratamiento que las de los sets: sustituto y aviso en `tools/check.js`.
+        El plano es un esquema dibujado con CSS, no una imagen: al no haber
+        geodatos reales que colocar, un mapa dibujado a ojo daría una posición
+        falsa igual de creíble que la dirección inventada. -->
+  <section class="section shops" id="tiendas" aria-labelledby="tiendas-title">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Tiendas</p>
+        <h2 id="tiendas-title">Dónde mirar antes de comprar</h2>
+        <p class="section-head__text">Los precios que ves aquí son de referencia y pueden no coincidir con los de la tienda. Antes de venir, mira si el set sigue a la venta: el catálogo se actualiza cuando cambia la ficha oficial.</p>
+      </div>
+
+      <div class="shops__map" aria-hidden="true">
+        <span class="shops__pin shops__pin--a" style="left:24%; top:34%"></span>
+        <span class="shops__pin shops__pin--b" style="left:58%; top:22%"></span>
+        <span class="shops__pin shops__pin--c" style="left:71%; top:66%"></span>
+      </div>
+
+      <div class="shops__list">
+        <article class="shop">
+          <h3 class="shop__name">Centro <span class="shop__tag">dato de ejemplo</span></h3>
+          <p class="shop__addr">Calle de la Ejemplo 01 · 28001 Madrid</p>
+          <p class="shop__meta"><span>L-S 10:00-20:30</span><span>Sin cita</span></p>
+        </article>
+        <article class="shop">
+          <h3 class="shop__name">Norte <span class="shop__tag">dato de ejemplo</span></h3>
+          <p class="shop__addr">Avinguda de la Ejemplo 02 · 08001 Barcelona</p>
+          <p class="shop__meta"><span>L-S 10:00-20:30</span><span>Pide cita</span></p>
+        </article>
+        <article class="shop">
+          <h3 class="shop__name">Levante <span class="shop__tag">dato de ejemplo</span></h3>
+          <p class="shop__addr">Carrer de la Ejemplo 03 · 46001 València</p>
+          <p class="shop__meta"><span>L-S 10:00-20:00</span><span>Sin cita</span></p>
+        </article>
+      </div>
+
+      <p class="section-foot">
+        <a class="btn btn--ghost" href="transparencia.html">De dónde salen los precios
+          <svg class="btn__ico" aria-hidden="true"><use href="#ic-arrow"></use></svg>
+        </a>
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div class="footer__about">
+        <a class="brand" href="#top" aria-label="LEGO Icons, ir al inicio">
+          <span class="brand__mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#ic-brick"></use></svg>
+          </span>
+          <span>
+            <span class="brand__name">LEGO Icons</span>
+            <span class="brand__sub">Catálogo de colección</span>
+          </span>
+        </a>
+        <p class="muted">
+          Catálogo independiente de sets de construcción de colección para adultos.
+          No somos una tienda ni el fabricante. LEGO® es una marca registrada de LEGO Group.
+        </p>
+      </div>
+
+      <nav aria-label="Categorías del catálogo">
+        <h2 class="footer__title">Categorías</h2>
+        <ul class="footer__list">
+          <!-- site:FOOTER_CATS:start -->
+  <li><a href="./catalogo.html#catalogo" data-jump-category="arquitectura">Arquitectura</a></li>
+  <li><a href="./catalogo.html#catalogo" data-jump-category="vehiculos">Vehículos</a></li>
+  <li><a href="./catalogo.html#catalogo" data-jump-category="cultura-pop">Cultura pop</a></li>
+  <li><a href="./catalogo.html#catalogo" data-jump-category="botanica">Botánica</a></li>
+<!-- site:FOOTER_CATS:end -->
+</ul>
+      </nav>
+
+      <nav aria-label="Información">
+        <h2 class="footer__title">Información</h2>
+        <ul class="footer__list">
+          <!-- site:FOOTER_NAV:start -->
+  <li><a href="index.html">Inicio</a></li>
+  <li><a href="catalogo.html">Catálogo</a></li>
+  <li><a href="temas.html">Temas</a></li>
+  <li><a href="preguntas-frecuentes.html">Guía y FAQ</a></li>
+  <li><a href="transparencia.html">Transparencia</a></li>
+<!-- site:FOOTER_NAV:end -->
+</ul>
+      </nav>
+
+      <nav aria-label="Contacto">
+        <h2 class="footer__title">Contacto</h2>
+        <ul class="footer__list">
+          <li><a href="mailto:hola@tudominio.com">Email</a></li>
+          <li><a href="./aviso-legal/">Aviso legal</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <!-- site:FOOTER:start -->
+<address class="footer__company">
+  <span class="footer__legal-name">Brick Studio Editorial S.L.</span>
+  <span class="footer__legal-meta">Calle de la Ejemplo 00 · 28001 Madrid · España</span>
+  <span class="footer__legal-meta">NIF B-00000000</span>
+  <span class="footer__legal-meta">Contacto legal y de privacidad: <a href="mailto:hola@tudominio.com">hola@tudominio.com</a></span>
+</address>
+<nav class="footer__legal" aria-label="Información legal">
+  <a href="./politica-privacidad/">Política de privacidad</a>
+  <a href="./terminos-y-condiciones/">Términos y condiciones</a>
+  <a href="./cookies/">Cookies</a>
+  <a href="./aviso-legal/">Aviso legal</a>
+</nav>
+<p class="footer__disclosure">Enlaces a tiendas de terceros. Este sitio no cobra comisión por ellos. El detalle, en transparencia. <a href="./transparencia.html">Ver la transparencia</a></p>
+<p class="footer__legal-note" data-copyright>© 2026 Brick Studio Editorial S.L. Todos los derechos reservados. LEGO® es una marca registrada de LEGO Group, que no patrocina, autoriza ni avala este sitio.</p>
+<!-- site:FOOTER:end -->
+  </div>
+</footer>
+
+<!-- ====================================================================
+     VISOR 3D DEL BLOQUE
+     --------------------------------------------------------------------
+     Un único diálogo para las dieciocho tarjetas: se rellena con los
+     `data-*` del botón que lo abre, así que el marcado no se duplica
+     dieciocho veces.
+
+     `hidden` y no `display:none` en el CSS para que el diálogo no se pueda
+     alcanzar con el tabulador antes de abrirlo. La gestión de foco, el
+     cierre con Escape y la devolución del foco al botón los hace
+     `initViewer3d()` en main.js; aquí solo está la estructura.
+     ==================================================================== -->
+<div class="viewer" id="viewer-3d" role="dialog" aria-modal="true"
+     aria-labelledby="viewer-3d-title" aria-describedby="viewer-3d-hint" hidden>
+  <div class="viewer__scrim" data-viewer-close></div>
+  <div class="viewer__panel" role="document">
+    <header class="viewer__head">
+      <p class="viewer__eyebrow">
+        <svg aria-hidden="true"><use href="#ic-box3d"></use></svg>
+        <span data-viewer-cat>Set</span>
+        <span class="viewer__ref" data-viewer-ref></span>
+      </p>
+      <h2 class="viewer__title" id="viewer-3d-title" data-viewer-name>Visor 3D</h2>
+      <button type="button" class="viewer__close" data-viewer-close>
+        <svg aria-hidden="true"><use href="#ic-close"></use></svg>
+        <span class="sr-only">Cerrar el visor 3D</span>
+      </button>
+    </header>
+
+    <!-- Escena: el bloque se construye con seis caras en 3D real. `.viewer__pivot`
+         recibe la inclinación y `.viewer__brick` el giro y el zoom, que
+         `initViewer3d()` escribe en `--rx`, `--ry` y `--z`. Los tetones van
+         DENTRO de la cara superior: esa cara ya está tumbada, así que la
+         arrastran consigo sin transformaciones propias. -->
+    <div class="viewer__stage" data-viewer-stage>
+      <div class="viewer__grid" aria-hidden="true"></div>
+      <div class="viewer__pivot" data-viewer-pivot>
+        <div class="viewer__brick" data-viewer-brick>
+          <span class="brick__face brick__face--front"></span>
+          <span class="brick__face brick__face--back"></span>
+          <span class="brick__face brick__face--left"></span>
+          <span class="brick__face brick__face--right"></span>
+          <span class="brick__face brick__face--top">
+            <span class="brick__stud brick__stud--1"></span>
+            <span class="brick__stud brick__stud--2"></span>
+            <span class="brick__stud brick__stud--3"></span>
+            <span class="brick__stud brick__stud--4"></span>
+          </span>
+          <span class="brick__face brick__face--under"></span>
+        </div>
+      </div>
+      <p class="viewer__axis" aria-hidden="true">
+        <span>Arrastra para girar · rueda para acercar</span>
+      </p>
+    </div>
+
+    <p class="viewer__hint" id="viewer-3d-hint" data-viewer-hint>
+      Modelo de bloques con perspectiva 3D calculada en CSS, sin WebGL.
+    </p>
+
+    <dl class="viewer__specs">
+      <div class="viewer__spec">
+        <dt>Piezas</dt>
+        <dd data-viewer-pieces>—</dd>
+      </div>
+      <div class="viewer__spec">
+        <dt>Montaje</dt>
+        <dd data-viewer-hours>—</dd>
+      </div>
+    </dl>
+  </div>
+</div>
+
+
+
+
+
+<script>
+/* Desactiva el contenido que queda detrás del overlay mientras se juega el
+   preloader. Va aquí, al final del <body>, y no junto al overlay por un motivo
+   muy concreto: tiene que ver a `<header>`, `<main>` y `<footer>` para poder
+   marcarlo, y esos elementos todavía no existen cuando se está escribiendo el
+   overlay. En una versión anterior iba justo debajo y se recorría
+   `document.body.children` en ese punto: solo encontraba el enlace de salto y
+   el propio overlay, así que la cabecera se quedaba con el foco disponible
+   durante los segundos que duraba la intro.
+
+   Tampoco depende de `preloader.js`, y esa es la segunda razón: si el módulo no
+   llegara nunca —que es el caso en el que más falta hace, con segundos de
+   carbón delante—, tiene que seguir bloqueando la web.
+
+   Se usa `inert` y no `visibility: hidden` porque `inert` quita el foco, el
+   puntero y el árbol de accesibilidad sin tocar el pintado: la página carga
+   exactamente igual de rápido y el LCP no se entera.
+
+   El observador reflotante y bidireccional por dos razones: si el atributo
+   apareciera más tarde, el bloqueo tiene que seguir al preloader; y si el módulo
+   fallara al terminar, el bloqueo se deshace igualmente. Que la web se quede
+   inerte para siempre es el fallo que no se puede dejar pasar. */
+(function () {
+  var root = document.documentElement;
+  var marked = [];
+
+  function apply() {
+    if (marked.length) return;
+    var kids = document.body.children;
+    for (var i = 0; i < kids.length; i++) {
+      var el = kids[i];
+      /* El overlay se queda activo: es lo único que hay en pantalla. El sprite
+         de iconos tampoco se toca: no es interactivo y muchos `<use>` lo
+         referencian, así que no hay nada que ganar marcándolo. */
+      if (el.id === 'preloader' || el.classList.contains('u-sprite')) continue;
+      el.setAttribute('inert', '');
+      marked.push(el);
+    }
+  }
+
+  function release() {
+    for (var k = 0; k < marked.length; k++) marked[k].removeAttribute('inert');
+    marked.length = 0;
+  }
+
+  var observer = new MutationObserver(function () {
+    if (root.hasAttribute('data-intro')) apply();
+    else release();
+  });
+  observer.observe(root, { attributeFilter: ['data-intro'] });
+
+  if (root.hasAttribute('data-intro')) apply();
+})();
+</script>
+
+<script src="assets/js/site-data.js"></script>
+<script src="assets/js/main.js" defer></script>
+<script type="module" src="assets/js/preloader.js"></script>
+</body>
+</html>
