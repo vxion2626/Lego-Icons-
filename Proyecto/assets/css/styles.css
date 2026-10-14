@@ -1,0 +1,3042 @@
+/* ==========================================================================
+   LEGO Icons · Manual de instrucciones
+   Hoja de estilos principal — Mobile First
+   --------------------------------------------------------------------------
+   El sitio se lee como el manual que viene dentro de la caja: papel crema,
+   tinta azul, numerales y reglas, ladrillos con tetón y etiquetas
+   rectangulares. Nada de tarjetas genéricas ni degradados de color: los únicos
+   `gradient()` del fichero son texturas de retícula (la placa de tetones del
+   fondo y la del suelo del visor) y el galón del desplegable de ordenación,
+   que es funcional, no decorativo.
+
+   00 · Tokens
+   01 · Reset y base
+   02 · Tipografía
+   03 · Layout y utilidades
+   04 · Botones, etiquetas e inserciones
+   05 · Cabecera y navegación
+   06 · Hero
+   07 · Imágenes con estado
+   08 · Tarjetas
+   09 · Catálogo: filtros, búsqueda y rejilla
+   10 · Temas, niveles, material y FAQ
+   11 · Transparencia
+   12 · Pie
+   13 · Páginas legales
+   14 · Visor 3D del bloque
+   15 · Accesibilidad, movimiento y medios
+   16 · Preloader de ladrillos (solo portada)
+   17 · Bloques del diseño de referencia
+   ========================================================================== */
+
+/* ==========================================================================
+   00 · TOKENS
+   ========================================================================== */
+:root {
+  color-scheme: light;
+
+  /* ==========================================================================
+     LA PALETA: TRES colores de marca y una rampa neutra cálida.
+     ==========================================================================
+     La regla del diseño sigue siendo estrecha —tres colores y nada más— pero
+     la rampa neutra dejó de ser gris puro. Antes los nueve neutros estaban
+     todos en croma 0-4, que es lo que hace un gris de máquina: `#f4f4f3` y
+     `#111111` no tienen temperatura. Ahora el papel es crema y la tinta es
+     carbón, con croma 9-36, y el motivo es que el amarillo, el rojo y el azul
+     de ladrillo son colores cálidos y saturados: sobre un gris frío se leían
+     como pegados encima. El crema y el carbón los reciben en su mundo.
+
+     Eso NO es abrir la paleta a cualquier color, y `tools/css-lint.js` sigue
+     vigilando exactamente lo mismo que antes, con un matiz: distingue dos
+     familias.
+
+       · Los colores de marca (`--brand`, `--accent`, `--blue` y sus dos
+         derivados para texto) pueden ser tan saturados como sea. Son tres, y
+         son los únicos que pueden shout.
+       · La rampa neutra puede tener croma cálido, hasta 40. Un verde o un
+         púrpura metidos en un token de texto siguen siendo un ERROR, porque
+         no están en ninguna de las dos listas.
+
+     La diferencia entre las dos familias no es "saturado" contra "poco
+     saturado", porque un crema totalmente desaturado y un azul casi gris se
+     distinguen mejor por su papel: uno es papel y el otro es un color que
+     stands out. Por eso la lista de la rampa es explícita, igual que la de
+     los colores de marca: añadir un hex a `:root` obliga a decidir en cuál
+     de las dos entra.
+
+     Reparto de los tres, medido para que no compitan:
+
+       · `--brand` rojo. Un CTA y poco más: sigue siendo lo único que puede
+         gritar en una pantalla. Como relleno lleva `--on-brand` encima
+         (5,11:1); para TEXTO rojo sobre crema va `--brand-ink`, que baja a
+         7,65:1. El rojo puro sobre crema se queda en 4,4:1 y por eso no se
+         usa ahí.
+       · `--accent` amarillo. El ladrillo. Etiquetas, precios, el marquee y
+         el fondo del hero. Da 12,62:1 sobre el carbón, así que sobre las
+         secciones oscuras sirve sin tocarlo.
+       · `--blue` azul. Es el color de ESTRUCTURA: el filtro que está puesto,
+         las referencias de set y los titulares de la colección. Nunca una
+         acción, porque la acción es roja. Para texto sobre crema va
+         `--blue-ink` (8,56:1). */
+
+  /* --- Superficies: el papel y la cartulina ---
+     `--bg` es el crema del plinto de tetones sobre el que se imprime todo;
+     `--surface` es la cartulina blanca que se pega encima. Las dos se miden en
+     el linter de contraste, así que los tres niveles de texto pasan en
+     ambas. `--paper` es el blanco de las etiquetas que se clavan encima: por
+     eso no lleva el crema, que se reservó para el fondo de página. */
+  --bg: #fff4dc;
+  --surface: #ffffff;
+  --surface-2: #f2e6ce;
+  --paper: #ffffff;
+
+  /* --- Tinta: carbón cálido, no gris ---
+     `--ink` hace dos trabajos: el texto de máxima presencia y el fondo de las
+     secciones oscuras. Que sea el mismo valor es lo que hace que la web se
+     lea como un solo material. `--text-3` es el tono más claro que se usa y
+     aun así pasa 5,81:1 sobre el crema, 6,34:1 sobre la cartulina y 5,13:1
+     sobre el crema profundo de los huecos. */
+  --ink: #1b1612;
+  --ink-2: #3a322c;
+  --text-1: #1b1612;
+  --text-2: #4a4038;
+  --text-3: #6b5d51;
+
+  /* Sobre tinta (cabecera del visor, secciones oscuras, pie) */
+  --on-ink: #fff4dc;
+  --on-ink-2: #c9bca9;
+
+  /* --- Marca: rojo ---
+     `--brand` es relleno y va siempre con `--on-brand` encima (5,11:1).
+     `--brand-ink` es el mismo tono para TEXTO: 7,65:1 sobre el crema. */
+  --brand: #d01012;
+  --brand-ink: #9e0c0e;
+  --on-brand: #fff4dc;
+
+  /* --- Ladrillo ---
+     El amarillo de ladrillo da 12,62:1 sobre `--ink`, así que sobre fondo
+     oscuro sirve sin tocarlo. */
+  --accent: #ffd500;
+  /* Versión apagada, solo para rellenos decorativos. Nunca lleva texto: el
+     crema sobre ella se queda en 1,6:1. */
+  --accent-deep: #d9b400;
+
+  /* --- Azul de estructura ---
+     El tercer color de marca. `--blue` es relleno —el chip de filtro puesto,
+     los ladrones del marquee— y lleva `--on-blue` encima (6,3:1). Para texto
+     sobre crema va `--blue-ink`, que sube a 8,56:1. */
+  --blue: #0055bf;
+  --blue-ink: #00429a;
+  --on-blue: #fff4dc;
+
+  /* --- Reglas y bordes ---
+     `--rule` no es decorativo: el linter lo mide con `--ink` encima porque
+     la insignia de nivel se imprime en esa pareja. Con el crema de fondo el
+     gris que servía antes se quedaba en 4,34:1, así que bajó de tono a
+     #9c8b7a y sube a 5,46:1. `--line` es pelo de línea y no se mide, pero
+     tampoco es libre: se queda en croma 35 para no acercarse al tope de 40
+     que el linter aplica a la rampa neutra. */
+  --line: #dfd3bc;
+  --rule: #9c8b7a;
+
+  /* --- Variables de tarjeta ---
+     Las redefinen las secciones oscuras, donde la ficha pasa a ser cartulina
+     clara sobre fondo carbón. Así el interior de la tarjeta no necesita
+     repetir colores ni usar `!important`. */
+  --card-bg: var(--surface);
+  --card-line: var(--ink);
+  --card-text: var(--text-1);
+  --card-dim: var(--text-2);
+
+  /* --- Tipografía ---
+     Cuatro familias y cada una con un único trabajo. Las dos que ya estaban
+     (`Bricolage` para titular, `Instrument Sans` para texto) siguen siendo el
+     par de lectura; la nueva es una adición del diseño de referencia y está
+     limitada a los sitios donde ese diseño usaba una letra distinta, que son
+     tres y se pueden enumerar:
+
+       · `--font-hero` (Anton) — solo el titular de portada, el texto gigante
+         del revelado y la marquesina. Es una condensada de mucho peso: a
+         tamaño grande y en mayúsculas es la que da el salto de escala, y a
+         tamaño de texto corriente se leen los huecos de las contraformas.
+
+     El diseño de referencia usaba además Lobster Two para los titulares de
+     sección, y llegó a declararse aquí como `--font-script`. Se quitó sin
+     llegar a usarse: mientras una tipografía está en el enlace de Google Fonts
+     y en `:root` pero no hay un solo elemento que la pida, el coste es real —
+     una descarga por página en las nueve— y el linter lo avisa con
+     `variables definidas y no usadas`. Anton ya cubre el salto de escala en
+     los tres sitios donde hace falta, así que dejar la segunda era gastar peso
+     para repetir el mismo efecto.
+
+     Las tres se cargan con `display=swap`, de modo que el texto se ve en la
+     pila del sistema hasta que llegan, y el titular de portada reserva
+     espacio con `size-adjust` para que el salto no mueva el layout. */
+  --font-display: "Bricolage Grotesque", "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-body: "Instrument Sans", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-hero: "Anton", "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "SF Mono", Consolas, monospace;
+
+  /* Escala fluida. El salto entre el cuerpo y el titular es grande a
+     propósito: es lo que separa una instrucción de un subtítulo. */
+  --fs-xs: clamp(0.76rem, 0.74rem + 0.1vw, 0.84rem);
+  --fs-sm: clamp(0.86rem, 0.84rem + 0.12vw, 0.95rem);
+  --fs-md: clamp(1rem, 0.97rem + 0.16vw, 1.12rem);
+  --fs-lg: clamp(1.15rem, 1.08rem + 0.34vw, 1.4rem);
+  --fs-xl: clamp(1.4rem, 1.26rem + 0.7vw, 1.9rem);
+  --fs-2xl: clamp(1.75rem, 1.5rem + 1.2vw, 2.6rem);
+  --fs-3xl: clamp(2.1rem, 1.7rem + 2vw, 3.4rem);
+  --fs-4xl: clamp(2.4rem, 1.75rem + 3.1vw, 4.4rem);
+
+  /* --- Medidas --- */
+  --wrap: 76rem;
+  --wrap-narrow: 56rem;
+  --gutter: clamp(1rem, 0.7rem + 1.4vw, 2rem);
+  --header-h: 4.25rem;
+
+  /* --- Movimiento --- */
+  --dur: 180ms;
+  --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+
+  /* --- Sombras: planas, como las que hace un troquel de grabado ---
+     El desplazamiento va en una sola dirección (abajo-derecha) y no se
+     difumina. Con un desenfoque la sombra deja de leerse como una pieza
+     encima de otra, que es lo que el diseño quiere decir: un ladrillo
+     apoyado en una superficie, no una tarjeta flotando. */
+  --shadow-1: 3px 3px 0 var(--ink);
+  --shadow-2: 6px 6px 0 var(--ink);
+  --shadow-3: 10px 10px 0 var(--ink);
+
+  /* --- Radios ---
+     La geometría del diseño de referencia es de píldora: todo lo que se
+     pulsa, el filtro, la etiqueta y el campo de texto son círculos
+     terminados. Las fichas conservan la esquina viva del troquel, porque una
+     ficha redondeada del todo deja de leerse como una pieza de cartulina.
+
+     `--radius-pill` es el valor real de la píldora y no `50%`: con el 50% un
+     rectángulo que no es cuadrado se convierte en una elipse, y el contorno
+     de 2 px se ve desigual en el lado largo. 999px se recorta al radio de la
+     mitad de la altura en cualquiera de los dos ejes. */
+  --radius-pill: 999px;
+  --radius-tile: 2px;
+  --radius-card: 16px;
+
+  /* El ángulo de un marco en la rejilla de polaroids. Vive aquí y no en el
+     `style` de cada foto solo por el linter: `tools/css-lint.js` exige que
+     todo `var()` esté resuelto en `:root`, y un `--tilt` declarado únicamente
+     en el marcado se leería como variable no definida. El valor por defecto es
+     cero, así que una foto sin inclinación propia sale recta. */
+  --tilt: 0deg;
+
+  /* El tono del tetón del patrón de textura, para quien lo use de fondo. Está
+     en `:root` y no en la utilidad `.studs` de la sección 17 porque el hero lo
+     usa también, y con la variable puesta aquí los dos leen el mismo valor:
+     si viviera en `.studs`, el hero se quedaría sin patrón entero.
+
+     Es un color y no una longitud a propósito. `--stud` sigue siendo la
+     medida del tetón del ladrillo del visor 3D, y un mismo nombre para dos
+     cosas distintas hace que un bloque de textura alrededor de un visor le
+     pida un tamaño y le devuelva un color. */
+  --stud-tint: rgba(27, 22, 18, 0.13);
+
+  /* --- Medidas del ladrillo del visor --- */
+  --brick-w: 4.6rem;
+  --brick-h: 2.3rem;
+  --brick-d: 4.6rem;
+  --stud: 2rem;
+}
+
+/* ==========================================================================
+   01 · RESET Y BASE
+   ========================================================================== */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+* { margin: 0; }
+
+html {
+  scroll-behavior: smooth;
+  /* El desplazamiento por anclas deja libre toda la cabecera, píldora
+     incluida. Antes la cabecera era una barra pegada al borde y bastaba
+     `--header-h`; ahora hay 0,75 rem de papel por encima de la píldora que
+     también taparía el destino, así que el offset sube a ese margen más el
+     respiro de siempre.
+
+     El mismo valor se usa en un solo sitio a propósito: si además de este
+     hubiera un `scroll-margin-top` en las secciones, los dos se sumarían y
+     dejaría un hueco de más de cien píxeles bajo una píldora de 68. */
+  scroll-padding-top: calc(var(--header-h) + 2.25rem);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--bg);
+  /* La placa de tetones: una retícula de puntos muy tenue que recuerda al
+    zócalo de una base. Es textura, no un degradado de color. */
+  background-image: radial-gradient(circle at 3px 3px, rgba(13, 39, 72, 0.07) 3.2px, transparent 3.3px);
+  background-size: 30px 30px;
+  color: var(--text-1);
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  line-height: 1.65;
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg,
+video { display: block; max-width: 100%; }
+
+img { height: auto; }
+
+button,
+input,
+select,
+textarea { font: inherit; color: inherit; }
+
+button { cursor: pointer; }
+
+ul, ol { padding: 0; list-style: none; }
+
+/* Los enlaces heredan el color del texto y se marcan con subrayado. Antes
+   eran rojo de marca TODOS, y en la página de temas eso significaba dieciséis
+   rótulos rojos repartidos por las tarjetas: con tanto rojo ninguno se leía
+   como importante, y el CTA —que es lo que de verdad hay que pulsar— se
+   diluía en el ruido.
+
+   El subrayado es lo que da la pista de que el texto es interactivo, así que
+   el rojo se queda libre para el botón, la disponibilidad y el aviso. Los
+   enlaces de tarjeta (`themecard__top-link`, `levelcard`) quitan el
+   subrayado: son un bloque entero, no una palabra dentro de una frase, y se
+   reconocen por el contorno de la ficha. */
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+a:hover { text-decoration-thickness: 2px; }
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+p { text-wrap: pretty; }
+
+h1 { font-size: var(--fs-4xl); }
+h2 { font-size: var(--fs-2xl); }
+h3 { font-size: var(--fs-lg); }
+
+strong { font-weight: 700; }
+
+code, kbd, samp {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+}
+
+::selection { background: var(--accent); color: var(--ink); }
+
+/* El sprite de iconos no se pinta ni ocupa sitio. */
+.u-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+[hidden] { display: none !important; }
+
+/* ==========================================================================
+   02 · TIPOGRAFÍA
+   ========================================================================== */
+
+/* Numeral de paso, como los rótulos de pieza de un manual. */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brand-ink);
+}
+
+.eyebrow::before {
+  content: "";
+  width: 0.6rem;
+  height: 0.6rem;
+  flex: none;
+  background: var(--accent);
+  border: 2px solid var(--ink);
+}
+
+.lead {
+  font-size: var(--fs-lg);
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+.muted { color: var(--text-3); }
+
+.line { display: block; }
+
+/* La segunda línea del titular lleva subrayado de rotulador, como el resto
+   de titulares interiors. El texto se queda en tinta: el titular ya grita por
+   tamaño, y si además fuera rojo competiría con el CTA, que es lo único que
+   debe estar en color de marca en la portada. Antes esta línea era roja y las
+   dos cosas shouted a la vez. */
+.grad-mark {
+  color: var(--text-1);
+  box-shadow: inset 0 -0.14em 0 var(--accent);
+}
+
+/* El `<mark>` de los titulares interiores resalta una palabra, no la decora:
+   se marca con un subrayado de_rotulador, sin cambiar el color del texto. */
+mark {
+  background: none;
+  color: inherit;
+  box-shadow: inset 0 -0.32em 0 var(--accent);
+}
+
+/* ==========================================================================
+   03 · LAYOUT Y UTILIDADES
+   ========================================================================== */
+.wrap {
+  width: 100%;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.wrap--narrow { max-width: var(--wrap-narrow); }
+
+.stack { display: grid; gap: 1rem; justify-items: start; }
+.stack-5 { gap: 1.5rem; }
+
+.section { padding-block: clamp(3rem, 2.2rem + 3.4vw, 5.5rem); }
+
+/* Sección sobre fondo carbón. Redefine las variables de ficha y el color de
+   texto, de forma que todo lo que hay dentro siga siendo legible sin repetir
+   una sola regla de color. El carbón sustituye al azul que había aquí: mismo
+   ritmo de bloques claros y oscuros, un solo color menos. */
+.section--alt {
+  --card-bg: var(--surface);
+  --card-line: var(--ink);
+  --card-text: var(--text-1);
+  --card-dim: var(--text-2);
+
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.section--alt .eyebrow { color: var(--accent); }
+.section--alt .eyebrow::before { background: var(--paper); }
+
+.section-head { max-width: 44rem; margin-bottom: clamp(1.75rem, 1.4rem + 1.6vw, 2.75rem); }
+.section-head h2 { margin-block: 0.5rem 0.75rem; }
+
+.section-head__text {
+  max-width: 62ch;
+  font-size: var(--fs-md);
+  color: var(--text-2);
+}
+
+.section--alt .section-head__text { color: var(--paper); opacity: 0.92; }
+
+.section-foot { margin-top: 2rem; text-align: center; }
+
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 200;
+  transform: translate(-50%, -140%);
+  padding: 0.8rem 1.4rem;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-decoration: none;
+  border: 2px solid var(--ink);
+  transition: transform var(--dur) var(--ease);
+}
+
+.skip-link:focus-visible { transform: translate(-50%, 0); }
+
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* El JS sigue añadiendo `.is-in` al hacer scroll, pero el diseño no esconde
+   nada: una entrada animada dejaría el contenido invisible si el script no
+   llegara a ejecutarse. La clase se declara para que no quede huérfana y para
+   dejar constancia de que aquí no hay animación de entrada. */
+.reveal { opacity: 1; }
+
+/* ==========================================================================
+   04 · BOTONES, ETIQUETAS E INSERCIONES
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 46px;
+  padding: 0.7rem 1.5rem;
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-pill);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease), background-color var(--dur) var(--ease);
+}
+
+.btn__ico { width: 1.05em; height: 1.05em; flex: none; }
+
+/* --- La escalera de los botones ---
+   Tres niveles y ni uno más. Lo que decide la mirada es el relleno:
+
+     `.btn--brand`   rojo.   El CTA que manda. Es la ÚNICA acción de la web
+                              en color de marca, y siempre dice lo mismo
+                              ("ver el catálogo"), así que que salga en todos
+                              los sitios reinforces una sola idea.
+     `.btn--primary` carbón. Acción real pero repetida: hay nueve en la portada
+                              y dieciocho en el catálogo. En rojo se convertirían
+                              en una franja de alarma y taparían al CTA.
+     `.btn--ghost`   sin relleno. Supporting cast.
+
+   La sombra dura (`--shadow-1`) es lo que separa al botón del plano; sin ella
+   el carbón y el rojo serían dos manchas del mismo peso. */
+.btn--brand {
+  background: var(--brand);
+  color: var(--on-brand);
+  box-shadow: var(--shadow-1);
+}
+
+.btn--brand:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+.btn--primary {
+  background: var(--ink);
+  color: var(--on-ink);
+  box-shadow: var(--shadow-1);
+}
+
+.btn--primary:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--ink);
+}
+
+/* Contorno: la acción secundaria nunca compite con la principal. */
+.btn--ghost {
+  background: var(--card-bg, var(--surface));
+  color: var(--card-text, var(--ink));
+  box-shadow: none;
+}
+
+/* El hover del secundario se queda en gris. Antes iba a amarillo y era el
+   momento en que una acción menor se convertía en lo más saturado de la
+   pantalla: justo lo contrario de lo que debe pasar al pasar el ratón. */
+.btn--ghost:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+.btn--block { display: flex; width: 100%; }
+
+.btn:active { transform: translate(2px, 2px); box-shadow: none; }
+
+/* Etiqueta de disponibilidad: una chapa redonda clavada en la foto. Píldora y
+   no rectángulo porque el diseño de referencia la trae así, y porque al
+   distinguirla por la forma y no solo por el color se sigue leyendo en una
+   foto de fondo cualquiera. */
+.setcard__badge {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  z-index: 3;
+  padding: 0.3rem 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-pill);
+}
+
+/* La disponibilidad es el dato que más se busca en una ficha, así que es la
+   única etiqueta que puede ir en el color de marca. Con el CTA en rojo y el
+   titular de portada también, un bloque rojo más en cada una de las dieciocho
+   tarjetas era lo que más competía con el CTA: entraba por el rabillo del ojo
+   y el CTA es lo que tiene que ganarle.
+
+   Carbón con texto crema y no un contorno fino porque sobre la foto del set
+   hace falta un fondo sólido para que se lea, y porque el borde de 2 px ya le
+   da el aire de etiqueta. Sin punto de estado de color: añadir un punto
+   amarillo a dieciocho fichas devolvería el cromo que ya se usa bastante. */
+.setcard__badge--now { background: var(--ink); color: var(--on-ink); border-color: var(--ink); }
+.setcard__badge--soon { background: var(--accent); color: var(--ink); }
+
+/* Rótulo del hero: chapa de papel clavada en la esquina de la ilustración. */
+.hero__tag {
+  position: absolute;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-1);
+}
+
+.hero__tag--tl { top: 1rem; left: 1rem; }
+.hero__tag b { font-weight: 700; }
+
+.pill__dot {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: currentColor;
+}
+
+/* Cuadro de icono: la pieza de catálogo de cada estilo. */
+/* Cuadro de icono de las tarjetas de tema. Va en gris y no en amarillo: hay
+   cinco tarjetas por pantalla y cinco ladrillos amarillos convertían el
+   icono en decoración. El amarillo queda para las etiquetas de estado, que
+   son pocas y sí significan algo. */
+/* El radio baja a 10 px, menos que el de las fichas, porque el cuadro es
+   pequeño y a 16 px un cuadrado de 2,6 rem se leía casi como un círculo y
+   perdía la forma de pieza. */
+.icon-badge {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  flex: none;
+  background: var(--surface-2);
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  color: var(--ink);
+}
+
+.icon-badge svg { width: 1.35rem; height: 1.35rem; }
+
+/* Superficie común de las fichas. `.setcard` la amplía más abajo.
+
+   El radio de 16 px es el del diseño de referencia. Antes era 2 px, la esquina
+   viva del troquel, y el cambio no es arbitrario: con el contorno de 2 px y la
+   sombra dura, una esquina de 2 px deja la sombra pegada al borde en la
+   diagonal y se ve como una mancha; a 16 px la sombra se separa de la ficha y
+   la pieza se lee como apoyada y no como recortada. */
+.glass {
+  background: var(--card-bg);
+  color: var(--card-text);
+  border: 2px solid var(--card-line);
+  border-radius: var(--radius-card);
+}
+
+/* ==========================================================================
+   05 · CABECERA Y NAVEGACIÓN
+   --------------------------------------------------------------------------
+   La cabecera del diseño de referencia es una píldora que flota separada del
+   contenido, con su sombra dura debajo y hueco de papel alrededor. Antes era
+   una barra blanca pegada al borde superior con una línea inferior que
+   aparecía al desplazar.
+
+   El cambio no es solo de forma: la barra ocupaba todo el ancho y el contenido
+   empezaba justo debajo, así que la cabecera era una franja más de la página.
+   La píldora deja una banda de crema visible por encima y por debajo, y esa
+   banda es la que separa la navegación del contenido sin gastar un borde.
+
+   Se mantiene `position: sticky` y no `fixed`, y es deliberado: con `fixed` el
+   alto de la cabecera hay que descontarlo a mano del `scroll-padding-top` de
+   cada ancla, y el menú móvil —que cuelga de la cabecera— quedaría anclado a
+   una caja que ya no existe en el flujo. `sticky` no necesita ninguna de las
+   dos correcciones.
+
+   La sombra dura va en `--shadow-1` desplazada solo hacia abajo (`0 4px 0`), y
+   no en la direccional que usan los botones: una píldora con la sombra en la
+   esquina se leía como un ladrillo empujado, que es lo que se quiere en un
+   botón y no en una barra que está quieta. */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 0.75rem var(--gutter) 0;
+  pointer-events: none;
+  background: transparent;
+}
+
+/* El fondo sólido lo lleva la píldora interior, no la cabecera. Así el papel se
+   ve por los lados del `wrap` y la cabecera no dibuja una franja de ancho
+   completo; `pointer-events: none` en el contenedor y `auto` en la píldora
+   hacen que el hueco lateral deje pasar el ratón a la página que hay debajo. */
+.header__inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: var(--header-h);
+  padding: 0.4rem 0.5rem 0.4rem 0.9rem;
+  pointer-events: auto;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 4px 0 var(--ink);
+  backdrop-filter: blur(10px) saturate(115%);
+  -webkit-backdrop-filter: blur(10px) saturate(115%);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+/* Al desplazar, la píldora se pega un poco más al borde superior. Sin esto
+   queda un hueco de 0,75 rem entre la píldora y el borde, y al bajar se ve la
+   franja de papel por encima de la navegación, que es justo el efecto de
+   "flota" que se quiere evitar cuando ya se está leyendo.
+
+   El borde inferior y la línea que aparecían antes se sustituyen por la sombra
+   de la píldora, así que aquí no queda ningún otro estado que animar. */
+.header[data-stuck="true"] .header__inner {
+  transform: translateY(-0.35rem);
+}
+
+/* La píldora no se estira al ancho del contenido. Antes `.header__inner` era
+   además un `.wrap`, con lo que arrastraba un `max-width` de 76rem y un
+   `padding-inline` de 2rem: para una fila de navegación eso es una barra vacía
+   por los dos lados. El gutter vive ahora en `.header` y la píldora se limita
+   a 60rem, con lo que la marca, los enlaces y el CTA quedan juntos en el
+   centro en vez de repartirse por una pantalla entera. En móvil no hay
+   límite: la píldora ocupa lo que puede, que es lo que hace que siga siendo
+   pulsable. */
+.header__inner { max-width: 100%; }
+
+@media (min-width: 940px) {
+  .header__inner {
+    max-width: min(60rem, 100%);
+    margin-inline: auto;
+  }
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: none;
+  /* La marca es un enlace de vuelta al inicio y también un objetivo táctil:
+     sin esta altura se quedaba en 34px, por debajo de los 44px que pide
+     WCAG 2.5.5. */
+  min-height: 44px;
+  font-family: var(--font-display);
+  line-height: 1.1;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.brand__mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  background: var(--accent);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+}
+
+.brand__mark svg { width: 20px; height: 20px; }
+
+.brand__name {
+  display: block;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.brand__sub {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.nav { display: none; margin-left: auto; }
+
+.nav__list {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+/* Los enlaces de navegación son píldoras, no texto con subrayado: al vivir
+   dentro de otra píldora, un subrayado recto se leía como una raya que
+   atravesaba el borde redondeado. El relleno del enlace activo es crema
+   profundo, no un color de marca, porque la cabecera está siempre en pantalla
+   y darle el rojo o el azul haría que un elemento fijo compitiera con el CTA
+   que sí está para pulsarse. */
+.nav__link {
+  display: block;
+  padding: 0.5rem 0.85rem;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  color: var(--text-2);
+  border-radius: var(--radius-pill);
+  transition: color var(--dur) var(--ease), background-color var(--dur) var(--ease);
+}
+
+.nav__link:hover { color: var(--ink); background: var(--surface-2); }
+
+/* El enlace de la página en la que se está. El HTML lo marca con
+   `aria-current="page"`; el espía de main.js lo reescribe a `"true"` cuando
+   la sección entra en pantalla, así que hay que cubrir los dos valores.
+
+   Se marca con relleno y no con una raya de color por lo mismo que antes: un
+   color de marca en la cabecera fija compite con el CTA. El amarillo se queda
+   para la barra de progreso. */
+.nav__link[aria-current] { color: var(--ink); background: var(--accent); }
+
+/* Marca estática de la página actual. El espía de main.js recorre todos los
+   `.nav__link` y borra `aria-current` de los que no son anclas, así que esta
+   clase es la que garantiza que la página actual siga resaltada. */
+.is-current { color: var(--ink); font-weight: 700; }
+
+.header__cta { display: none; }
+
+.nav-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-left: auto;
+  background: var(--accent);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-pill);
+}
+
+.nav-toggle__bars { position: relative; width: 18px; height: 12px; }
+
+.nav-toggle__bars span {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  transition: transform var(--dur) var(--ease), opacity var(--dur) var(--ease);
+}
+
+.nav-toggle__bars span:nth-child(1) { top: 0; }
+.nav-toggle__bars span:nth-child(2) { top: 5px; }
+.nav-toggle__bars span:nth-child(3) { top: 10px; }
+
+.nav-toggle[aria-expanded="true"] .nav-toggle__bars span:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] .nav-toggle__bars span:nth-child(2) { opacity: 0; }
+.nav-toggle[aria-expanded="true"] .nav-toggle__bars span:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+
+/* El menú móvil deja de ser una banda de ancho completo y pasa a ser una ficha
+   que cae desde la píldora. Comparte su ancho en escritorio, pero se separa
+   con un margen para que se lea como una pieza distinta y no como una
+   continuación de la barra.
+
+   `pointer-events: auto` es obligatorio: `.header` lo declara en `none` para
+   que el papel de los lados deje pasar el ratón a la página de debajo, y esa
+   herencia llega también al menú, que si no sería invisible al puntero. */
+.nav-drawer {
+  display: grid;
+  gap: 0.1rem;
+  position: relative;
+  z-index: 1;
+  margin: 0.6rem auto 0;
+  padding: 0.6rem 0.75rem 0.9rem;
+  max-width: min(60rem, 100%);
+  pointer-events: auto;
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  box-shadow: var(--shadow-2);
+}
+
+.nav-drawer a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.55rem 0.9rem;
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--text-2);
+  border-radius: var(--radius-pill);
+  transition: color var(--dur) var(--ease), background-color var(--dur) var(--ease);
+}
+
+.nav-drawer a:hover { color: var(--ink); background: var(--surface-2); }
+.nav-drawer a[aria-current="page"] { color: var(--ink); background: var(--accent); }
+.nav-drawer__cta { margin-top: 0.9rem; }
+
+/* 940px es el mismo corte que mira main.js para cerrar el cajón: por debajo de
+   esta cifra el menú existe, y por encima desaparece. */
+@media (min-width: 940px) {
+  .nav { display: block; }
+  .nav-toggle { display: none; }
+  .nav-drawer { display: none !important; }
+  .header__cta {
+    display: inline-flex;
+    min-height: 44px;
+    padding: 0.5rem 0.95rem;
+    font-size: var(--fs-xs);
+  }
+}
+
+/* Barra de progreso de lectura: un ladrillo que crece por dentro de la
+   píldora. Va dentro de `.header__inner` y no como hermano suyo porque tiene
+   que seguir la curva del borde inferior: como elemento suelto de la cabecera
+   quedaría una línea recta de ancho completo debajo de una caja redondeada, que
+   es lo que ya pasaba antes.
+
+   Se acorta por los dos lados (`inset-inline: 14%`) para que no se salga por las
+   curvas de la píldora en los extremos, y `transform-origin` a la izquierda
+   para que crezca desde el principio de la lectura y no desde el centro. */
+.scroll-progress {
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  bottom: 0;
+  height: 4px;
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--p, 0));
+  opacity: 0;
+  transition: opacity var(--dur) linear;
+}
+
+.header[data-stuck="true"] .scroll-progress { opacity: 1; }
+
+/* ==========================================================================
+   06 · HERO
+   ========================================================================== */
+.hero {
+  padding-block: clamp(2.5rem, 1.8rem + 3vw, 5rem);
+  border-bottom: 2px solid var(--ink);
+}
+
+.hero__grid {
+  display: grid;
+  gap: clamp(2rem, 1.4rem + 2.6vw, 3.5rem);
+  align-items: center;
+}
+
+.hero__copy { max-width: 42rem; }
+
+/* El titular de portada pasa a la condensada del diseño y a mayúsculas. Antes
+   se componía en `Bricolage` 800 sobre el crema, en caja de Sentence: se leía
+   como el titular de un catálogo. `Anton` en mayúsculas con la sombra blanca
+   de 8 px debajo es la letra del diseño de referencia, y es la que sostiene el
+   salto de escala del hero.
+
+   El color es carbón y no rojo, y esto es una corrección deliberada de una
+   decisión anterior. Con el hero entero en amarillo, un titular rojo encima
+   llevaba dos superficies grandes y saturadas en la misma pantalla; ahora el
+   amarillo es el fondo y el carbón hace de titular, de modo que lo único rojo
+   que queda en la portada es el CTA. */
+.hero__title {
+  margin-block: 1rem 1.15rem;
+  font-family: var(--font-hero);
+  font-size: clamp(2.8rem, 1.6rem + 5.4vw, 6.5rem);
+  font-weight: 400;
+  line-height: 0.94;
+  letter-spacing: 0.005em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-shadow: 0 8px 0 var(--paper);
+}
+
+/* La segunda línea, la que el diseño escribe en el color de marca. Sobre el
+   amarillo, `#D01012` mide 3,92:1, que pasa el umbral de texto grande de WCAG
+   (3:1) y no el de texto corriente (4,5:1). Como esto va a 44 px o más, es
+   legal — pero no vale para subirlo de tamaño de forma arbitraria ni para
+   ponerlo en el subtítulo, donde sí fallaría. `--brand-ink` bajaría a 5,88:1
+   y es la opción si alguna vez hace falta el rojo en texto pequeño. */
+.hero__title .grad-mark {
+  color: var(--brand);
+  box-shadow: none;
+}
+
+/* En páginas interiores el titular no necesita el salto de portada: la
+   sección ya tiene su propio ritmo y un h1 tan grande compite con la
+   rejilla que viene justo debajo. */
+.hero--page .hero__title { font-size: var(--fs-3xl); }
+
+.hero__sub {
+  max-width: 56ch;
+  font-size: var(--fs-lg);
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* El hero de portada se imprime entero sobre el ladrillo, con la retícula de
+   tetones. Antes se había movido al crema a propósito, con un argumento que
+   sigue siendo bueno —una superficie saturada del tamaño de la pantalla y,
+   dentro, el elemento en color de marca, no dejan saber cuál es la acción— y
+   que se resuelve distinto que entonces: el titular pasó a carbón y la segunda
+   línea al rojo, así que en el centro de la pantalla hay un solo elemento rojo
+   y es el CTA. El amarillo de fondo ya no compite con nadie.
+
+   El patrón de tetones se dibuja con `color-mix` sobre el mismo amarillo y no
+   con el azul de la placa neutra, porque un punto azul sobre amarillo se ve
+   como una mancha y sobre crema se veía como una sombra. Al ser el fondo del
+   propio ladrillo, la textura tiene que ser del ladrillo.
+
+   El borde inferior se queda: es lo que separa el hero del bloque siguiente y
+   evita que el amarillo se coma el crema de la sección de destacados. */
+.hero--catalog {
+  background-color: var(--accent);
+  background-image: radial-gradient(circle at 4px 4px, var(--stud-tint) 4px, transparent 4.2px);
+  background-size: 32px 32px;
+  border-bottom-color: var(--ink);
+}
+
+/* El antetítulo se queda en carbón y con la raya en crema: sobre el amarillo,
+   un cuadrado de otro color delata más de lo que informa. */
+.hero--catalog .eyebrow { color: var(--ink); }
+.hero--catalog .eyebrow::before { background: var(--paper); }
+
+/* En las páginas interiores el hero sigue en crema. El amarillo se reserva
+   para la portada: si las cinco páginas interiores também empezaran con una
+   pantalla amarilla, el ladrillo dejaría de ser un acento y pasaría a ser el
+   fondo del sitio entero. */
+.hero--page {
+  background-color: var(--bg);
+  border-bottom-color: var(--ink);
+}
+
+/* Marco de la ilustración: el recuadro numerado de un despiece, clavado sobre
+   el amarillo. Pasa de crema a blanco para que se despegue del fondo: un marco
+   del mismo tono que el suelo se leía como un bloque sin borde. */
+.hero__frame {
+  position: relative;
+  padding: clamp(1rem, 0.6rem + 1.6vw, 2rem);
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: var(--shadow-3);
+}
+
+.hero--catalog .hero__frame { aspect-ratio: 4 / 3; background: var(--accent-deep); }
+.hero--catalog .hero__frame img { width: 100%; height: 100%; object-fit: contain; }
+
+/* El pie de cifras va en `--ink-2` y no en `--text-3`. Sobre el amarillo,
+   `--text-3` mide 4,46:1, dos centésimas por debajo del 4,5:1 que pide el
+   texto corriente, y estas etiquetas son de 10 px: no es un sitio donde se
+   pueda aceptar ese margen. */
+.hero--catalog .hero__fact-l { color: var(--ink-2); }
+
+.hero__media { max-width: 22rem; margin-inline: auto; }
+
+.hero__img {
+  padding: 1.25rem;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: var(--shadow-2);
+}
+
+/* Cifras del hero: se leen como el pie de foto de una lámina. */
+.hero__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.25rem;
+  width: 100%;
+  padding-top: 1.25rem;
+  border-top: 2px solid var(--ink);
+}
+
+.hero__fact-n {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.hero__fact-l {
+  display: block;
+  margin-top: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.hero--page .hero__sub { max-width: 56ch; }
+
+@media (min-width: 900px) {
+  .hero__grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); }
+  .hero__facts { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* ==========================================================================
+   07 · IMÁGENES CON ESTADO
+   --------------------------------------------------------------------------
+   `main.js` escribe `data-state` en cada contenedor `[data-img]`:
+   `loading` mientras la foto no ha llegado, `loaded` cuando se ha pintado y
+   `error` cuando no existe. El esqueleto solo se ve en `loading`, así que sin
+   JavaScript —donde `data-state` no existe nunca— se ve directamente la
+   imagen, que es justo lo que debe pasar en un sitio estático.
+   ========================================================================== */
+.imgbox {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.imgbox__skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--surface-2);
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+
+.imgbox[data-state="loading"] .imgbox__skeleton { opacity: 1; }
+
+.imgbox__el {
+  position: relative;
+  z-index: 2;
+  opacity: 1;
+  transition: opacity var(--dur) var(--ease);
+}
+
+.imgbox[data-state="error"] .imgbox__el,
+.imgbox[data-state="error"] .imgbox__skeleton { display: none; }
+
+/* Sustituto de una foto que no existe. `backdrop-filter` con `blur` es
+   deliberado: el e2e lo comprueba en los dieciocho, porque el desenfoque es
+   lo que da profundidad al hueco que deja la imagen que falta. */
+.imgbox__fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.35rem;
+  padding: 1rem;
+  text-align: center;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+}
+
+.imgbox__fallback-icon { width: 32px; height: 32px; color: var(--brand-ink); }
+
+.imgbox__fallback-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.imgbox__fallback-path {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.imgbox__fallback-note {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 0.5rem 0.75rem;
+  font-size: var(--fs-xs);
+  color: var(--ink);
+  background: var(--paper);
+  border-top: 2px solid var(--ink);
+}
+
+.imgbox__fallback-note a { color: var(--brand-ink); }
+
+/* ==========================================================================
+   08 · TARJETAS
+   ========================================================================== */
+.set-grid {
+  display: grid;
+  gap: clamp(1rem, 0.85rem + 0.7vw, 1.5rem);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+}
+
+/* Los destacados son cinco: con el ancho del catálogo cada una quedaba tan
+   ancha que la foto se comía media pantalla. */
+.set-grid--featured { grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); }
+.set-grid--preview { margin-top: 2rem; }
+
+.setcard {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* La foto va en la cabeza de la ficha, con las esquinas superiores redondeadas
+   14 px: los 2 px que faltan respecto a los 16 de la ficha son el grosor del
+   borde, que se dibuja encima. El `overflow: hidden` de `.imgbox` hace que la
+   imagen, que llega cuadrada, herede esas curvas en vez de desbordarlas. */
+.setcard__media {
+  aspect-ratio: 4 / 3;
+  border-bottom: 2px solid var(--ink);
+  border-radius: calc(var(--radius-card) - 2px) calc(var(--radius-card) - 2px) 0 0;
+}
+
+.setcard__media .imgbox__el { width: 100%; height: 100%; object-fit: cover; }
+
+.setcard__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 1rem 1.1rem 1.15rem;
+}
+
+.setcard__cat {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--card-dim);
+}
+
+/* El icono de la categoría va en azul de estructura, no en rojo. El azul es el
+   color de los datos —el que identifica de qué estilo es la pieza— y el rojo
+   queda para la acción, que es lo que hay que pulsar. */
+.setcard__cat svg { width: 15px; height: 15px; flex: none; color: var(--blue-ink); }
+
+.setcard__ref {
+  margin-left: auto;
+  padding: 0.15rem 0.5rem;
+  color: var(--card-text);
+  background: var(--surface-2);
+  border: 1px solid var(--card-line);
+  border-radius: var(--radius-pill);
+  font-variant-numeric: tabular-nums;
+}
+
+.setcard__title { font-size: var(--fs-lg); }
+
+.setcard__summary {
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+  color: var(--card-dim);
+}
+
+.setcard__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  color: var(--card-dim);
+}
+
+.setcard__hours { display: inline-flex; align-items: center; gap: 0.3rem; }
+.setcard__hours-ico { width: 13px; height: 13px; flex: none; }
+
+.setcard__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--rule);
+}
+
+.setcard__amount {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.setcard__pricetag {
+  padding: 0.15rem 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-pill);
+}
+
+/* Precio sin confirmar en España: el rótulo lleva borde discontinuo, que es
+   la marca de «esto es provisional» en un despiece. El discontinuo sobrevive al
+   radio de píldora porque el patrón lo dibuja el propio borde, no el fondo. */
+.setcard__pricetag--unconfirmed { border-style: dashed; color: var(--text-2); background: transparent; }
+
+.setcard__price--pending .setcard__pricetag { color: var(--brand-ink); border-style: solid; }
+
+.setcard__cta,
+.setcard__3d { margin-top: 0.35rem; width: 100%; }
+
+/* Ficha sin enlace de tienda: el camino sigue existiendo aunque hoy los 18
+   sets lo tengan. */
+.setcard__pending {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+  padding: 0.6rem 0.8rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+  border: 2px dashed var(--rule);
+}
+
+.setcard__pending-ico { width: 15px; height: 15px; flex: none; color: var(--text-3); }
+
+/* La tarjeta de destacado no repite precio ni botón de tienda: en portada
+   interesa el nombre y la foto, no una lista de enlaces. */
+.featurecard .setcard__price,
+.featurecard .setcard__cta,
+.featurecard .setcard__hours { display: none; }
+
+.catalog__more { margin-top: 1.5rem; }
+
+/* ==========================================================================
+   09 · CATÁLOGO: FILTROS, BÚSQUEDA Y REJILLA
+   ========================================================================== */
+.catalog__grid { display: grid; gap: 1.5rem; }
+
+/* Bloque de filtros: una bandeja de piezas sueltas sobre la placa. El diseño
+   de referencia no los encaja en ninguna caja —los deja como una fila de
+   píldoras sobre el papel—, y aquí se mantiene la bandeja porque hace falta
+   un borde que separe el bloque de filtros del catálogo en las páginas
+   largas, donde los controles y las fichas se leen como una sola masa. */
+.filters {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(0.9rem, 0.7rem + 0.6vw, 1.25rem);
+  background: var(--card-bg);
+  border: 2px solid var(--card-line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-1);
+}
+
+.filters__chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+/* Cada filtro es una pieza con su número de unidades. La geometría es de
+   píldora, como en el diseño de referencia, y el motivo de que convenga aquí y
+   no en las fichas es que los filtros ya son controles, no contenedores: un
+   círculo comunica «esto se pulsa» mejor que un cuadrado. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-2);
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-pill);
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+
+.chip:hover { background: var(--accent); color: var(--ink); }
+
+.chip__ico { width: 16px; height: 16px; flex: none; color: var(--blue-ink); }
+
+.chip__count {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-3);
+}
+
+/* El filtro que está puesto se rellena en azul, que es el color de estructura
+   de la paleta. Antes era carbón, y el azul es mejor aquí por una razón
+   concreta: el azul no está en ningún otro sitio de la ficha —ni el CTA, ni la
+   disponibilidad, ni el precio—, así que el filtro activo se lee como un
+   estado y no como un botón más. Con carbón competía con los CTA secundarios
+   de cada tarjeta; con rojo habría compitido con el CTA de marca. */
+.chip.is-active {
+  background: var(--blue);
+  border-color: var(--ink);
+  color: var(--on-blue);
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.chip.is-active .chip__ico { color: var(--on-blue); }
+.chip.is-active .chip__count { color: var(--on-blue); }
+.chip[hidden] { display: none; }
+
+.filters__tools { display: grid; gap: 0.85rem; }
+
+.field { position: relative; display: grid; gap: 0.3rem; min-width: 0; }
+
+.field__label {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.field__ico {
+  position: absolute;
+  left: 1.05rem;
+  bottom: 1.15rem;
+  width: 17px;
+  height: 17px;
+  color: var(--text-3);
+  pointer-events: none;
+}
+
+.field__input,
+.field__select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.65rem 1.1rem;
+  color: var(--text-1);
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-pill);
+  transition: border-color var(--dur) var(--ease), background-color var(--dur) var(--ease);
+}
+
+.field__input { padding-left: 2.6rem; }
+.field__input::placeholder { color: var(--text-3); }
+
+.field__select {
+  appearance: none;
+  padding-right: 2.6rem;
+  cursor: pointer;
+  /* Galón dibujado con dos líneas a 45°: es la única forma de tener una
+     flecha sin imagen ni carácter, y funciona en todos los navegadores. Con
+     el radio de píldora el galón se acerca un poco más al borde, porque la
+     esquina redondeada deja hueco al que el cuadrado no dejaba. */
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 1.35rem) 1.62rem, calc(100% - 1rem) 1.62rem;
+  background-size: 0.34rem 0.34rem, 0.34rem 0.34rem;
+  background-repeat: no-repeat;
+}
+
+.field__select option { color: var(--text-1); background: var(--surface); }
+
+.catalog__count {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+.catalog__count [data-count-sets] { font-weight: 700; color: var(--text-1); }
+
+.catalog__count [data-count-pieces] {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-3);
+}
+
+.catalog__count-sep { color: var(--rule); }
+
+/* Sin resultados: main.js marca la rejilla con `data-empty`. */
+#set-grid[data-empty="true"] {
+  padding: 2.5rem 1rem;
+  border: 2px dashed var(--rule);
+}
+
+@media (min-width: 760px) {
+  .filters__tools { grid-template-columns: minmax(0, 1fr) minmax(0, 16rem); align-items: end; }
+}
+
+/* ==========================================================================
+   10 · TEMAS, NIVELES, MATERIAL Y FAQ
+   ========================================================================== */
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  gap: 1.25rem;
+}
+
+.themecard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.15rem;
+  background: var(--card-bg);
+  color: var(--card-text);
+  border: 2px solid var(--card-line);
+  border-radius: 2px;
+}
+
+.themecard__top { display: flex; align-items: center; gap: 0.75rem; }
+.themecard__icon { flex: none; }
+.themecard__title { margin: 0; min-width: 0; }
+
+.themecard__count {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--card-dim);
+}
+
+.themecard__text { font-size: var(--fs-sm); color: var(--card-dim); }
+
+/* Cifras de la ficha: en tabla, como el despiece de un manual. */
+.themecard__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.themecard__stat { display: flex; flex-direction: column; min-width: 0; }
+
+.themecard__stat-n {
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.themecard__stat-l {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--card-dim);
+}
+
+.themecard__top-set {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--rule);
+}
+
+.themecard__top-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--card-dim);
+}
+
+.themecard__top-link { display: flex; align-items: baseline; gap: 0.4rem; min-width: 0; min-height: 44px; text-decoration: none; }
+.themecard__top-name { font-weight: 700; min-width: 0; }
+.themecard__top-meta { font-family: var(--font-mono); font-size: var(--fs-xs); white-space: nowrap; color: var(--card-dim); }
+.themecard__top-link svg { width: 14px; height: 14px; flex: none; }
+
+.themecard__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.themecard__link svg { width: 15px; height: 15px; }
+
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 1.25rem;
+}
+
+.levelcard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.15rem;
+  background: var(--card-bg);
+  color: var(--card-text);
+  border: 2px solid var(--card-line);
+  border-radius: 2px;
+}
+
+.levelcard__head { display: flex; align-items: center; gap: 0.75rem; }
+
+.levelcard__badge {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  flex: none;
+  background: var(--accent);
+  border: 2px solid var(--ink);
+  color: var(--ink);
+}
+
+.levelcard__badge svg { width: 1.3rem; height: 1.3rem; }
+/* Los tres niveles se separan subiendo y bajando grises, no con tres colores:
+   rápido en gris claro, fin de semana en rojo (el único que grita) y
+   legendario en carbón, que es el tono más serio de la paleta. La escalera se
+   lee de un vistazo y el rojo queda libre para lo que de verdad urge. */
+.levelcard__badge--rapido { background: var(--rule); color: var(--ink); }
+.levelcard__badge--fin-de-semana { background: var(--accent); color: var(--ink); }
+.levelcard__badge--legendario { background: var(--ink); color: var(--on-ink); }
+
+.levelcard__title { margin: 0; min-width: 0; }
+
+.levelcard__sub { font-size: var(--fs-sm); color: var(--card-dim); }
+.levelcard__text { font-size: var(--fs-sm); color: var(--card-dim); }
+
+.levelcard__specs {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0.75rem 0.85rem;
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+}
+
+.levelcard__specs > div { display: flex; justify-content: space-between; gap: 0.75rem; }
+
+.levelcard__specs dt {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.levelcard__specs dd { margin: 0; font-size: var(--fs-sm); font-weight: 700; text-align: right; }
+
+.levelcard__sets { display: grid; gap: 0.3rem; margin-top: auto; padding-top: 0.75rem; border-top: 1px solid var(--rule); }
+
+.levelcard__sets-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--card-dim);
+}
+
+.levelcard__set a {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.35rem 0;
+  text-decoration: none;
+  border-bottom: 1px dotted var(--rule);
+}
+
+.levelcard__set-name { font-weight: 600; min-width: 0; }
+.levelcard__set-meta { font-family: var(--font-mono); font-size: 0.64rem; white-space: nowrap; color: var(--card-dim); }
+
+/* --- Material necesario --- */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 1rem;
+}
+
+.toolcard {
+  padding: 1.1rem;
+  background: var(--card-bg);
+  color: var(--card-text);
+  border: 2px solid var(--card-line);
+  border-left-width: 8px;
+  border-radius: 2px;
+}
+
+.toolcard__title { margin-bottom: 0.4rem; font-size: var(--fs-md); }
+.toolcard__text { font-size: var(--fs-sm); color: var(--card-dim); }
+
+/* --- Acordeón --- */
+.faq__list { display: grid; gap: 0.5rem; }
+
+.faq__item {
+  background: var(--card-bg);
+  border: 2px solid var(--card-line);
+  border-radius: 2px;
+}
+
+.faq__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  min-height: 56px;
+  padding: 0.85rem 1.1rem;
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  text-align: left;
+  color: var(--card-text);
+  transition: background-color var(--dur) var(--ease);
+}
+
+.faq__q:hover { background: var(--accent); color: var(--ink); }
+.faq__q[aria-expanded="true"] { background: var(--accent); color: var(--ink); }
+
+/* Signo `+` / `−` dibujado con dos pseudo-piezas, como en el despiece. */
+.faq__sign {
+  position: relative;
+  width: 1.05rem;
+  height: 1.05rem;
+  flex: none;
+  border: 2px solid currentColor;
+}
+
+.faq__sign::before,
+.faq__sign::after {
+  content: "";
+  position: absolute;
+  inset: 50% 0.15rem auto 0.15rem;
+  height: 2px;
+  background: currentColor;
+  transform: translateY(-50%);
+}
+
+.faq__sign::after { transform: translateY(-50%) rotate(90deg); }
+.faq__q[aria-expanded="true"] .faq__sign::after { display: none; }
+
+.faq__a {
+  display: grid;
+  grid-template-rows: 0fr;
+  border-top: 0 solid var(--rule);
+  transition: grid-template-rows var(--dur) var(--ease), border-top-width var(--dur) var(--ease);
+}
+
+.faq__a > div { overflow: hidden; }
+
+.faq__a[data-open="true"] {
+  grid-template-rows: 1fr;
+  border-top-width: 2px;
+}
+
+.faq__a p {
+  padding: 0.85rem 1.1rem 1rem;
+  font-size: var(--fs-sm);
+  color: var(--card-dim);
+}
+
+/* --- Tabla de la guía --- */
+.gtable {
+  width: 100%;
+  margin-top: 1.25rem;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  font-size: var(--fs-sm);
+}
+
+.gtable__caption {
+  padding-bottom: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--text-3);
+}
+
+.gtable th,
+.gtable td {
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+
+.gtable thead th {
+  background: var(--surface-2);
+  border-bottom: 2px solid var(--ink);
+}
+
+.gtable th[scope="row"] { font-weight: 700; color: var(--text-1); }
+.gtable td { color: var(--text-2); font-variant-numeric: tabular-nums; }
+.gtable tfoot th,
+.gtable tfoot td { border-bottom: 0; background: var(--surface-2); }
+
+/* Por debajo de 30rem la tabla se salía del contenedor y arrastraba a la
+   página entera con ella: 22px de scroll horizontal en un sitio donde no hay
+   nada que desplazarse a un lado. Menos aire horizontal y un cuerpo algo
+   menor bastan para que las cuatro columnas quepan en 320px. */
+@media (max-width: 30rem) {
+  .gtable { font-size: var(--fs-xs); }
+  .gtable th,
+  .gtable td { padding: 0.45rem 0.4rem; }
+  .gtable__caption { padding-bottom: 0.4rem; }
+}
+
+.guide__note {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  background: var(--surface);
+  border: 2px dashed var(--rule);
+}
+
+/* ==========================================================================
+   11 · TRANSPARENCIA
+   ========================================================================== */
+.tsides {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 900px) {
+  .tsides { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.tside {
+  padding: 1.25rem;
+  background: var(--card-bg);
+  color: var(--card-text);
+  border: 2px solid var(--card-line);
+  border-top-width: 8px;
+  border-radius: 2px;
+}
+
+/* El borde rojo queda para el aviso ("lo que NO hacemos"). El lado afirmativo
+   se apoya solo en la tipografía y en un gris: si los dos gritaran, no
+   distinguiría nada el que escanea la columna. */
+.tside--no { border-top-color: var(--rule); }
+.tside--yes { border-top-color: var(--rule); }
+
+.tside__head { display: flex; gap: 0.85rem; margin-bottom: 1rem; }
+.tside__title { margin: 0; align-self: center; min-width: 0; }
+
+.tside__icon {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  flex: none;
+  border: 2px solid var(--ink);
+  color: var(--on-brand);
+}
+
+.tside__icon svg { width: 1.35rem; height: 1.35rem; }
+/* El aviso se señala con el filo rojo de arriba y nada más. El icono va en
+   gris: el CTA de la cabecera ya es un cuadrado rojo en la misma pantalla, y
+   con el icono también rojo había dos focos compitiendo por la misma atención
+   sin que ninguna de las dos cosas fuera la acción. */
+.tside--no .tside__icon { background: var(--surface-2); color: var(--ink); }
+.tside--yes .tside__icon { background: var(--rule); color: var(--ink); }
+
+.tside__intro { font-size: var(--fs-sm); color: var(--card-dim); }
+
+.tside__list { display: grid; gap: 0.9rem; }
+
+.titem { margin: 0; }
+.titem__title { margin-bottom: 0.25rem; font-size: var(--fs-md); }
+.titem__text { font-size: var(--fs-sm); color: var(--card-dim); }
+
+.prose { max-width: 68ch; }
+.prose p + p { margin-top: 1rem; }
+
+/* Solo dentro de una sección azul: en las legales el texto fuerte va en tinta. */
+.section--alt .prose strong { color: var(--paper); }
+
+/* ==========================================================================
+   12 · PIE
+   ========================================================================== */
+.footer {
+  padding-block: clamp(2.5rem, 2rem + 2vw, 4rem);
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+.footer a { color: var(--on-ink); }
+.footer a:hover { color: var(--accent); }
+
+.footer__grid {
+  display: grid;
+  gap: 2rem;
+}
+
+.footer .brand { color: var(--on-ink); }
+.footer .brand__mark { background: var(--accent); color: var(--ink); }
+.footer .brand__sub { color: var(--on-ink-2); }
+.footer .muted { color: var(--on-ink-2); font-size: var(--fs-sm); }
+
+.footer__title {
+  margin-bottom: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  /* Gris apagado, no amarillo. El pie es de los sitios donde el diseño dice
+     "que no grite", y a la vez es donde estaba la marca más visible: título
+     en amarillo y el cuadrado del logo al lado, dos yellows juntos. */
+  color: var(--on-ink-2);
+}
+
+.footer__list { display: grid; gap: 0.15rem; }
+.footer__list a { display: flex; align-items: center; min-height: 44px; text-decoration: none; font-size: var(--fs-sm); }
+
+/* Bloque de presentación del pie: la marca y el párrafo de qué es esto. */
+.footer__about { display: grid; gap: 0.9rem; align-content: start; max-width: 42ch; }
+
+.footer__company {
+  display: grid;
+  gap: 0.2rem;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--ink-2);
+  font-style: normal;
+  font-size: var(--fs-sm);
+  color: var(--on-ink-2);
+}
+
+.footer__legal-name { font-weight: 700; color: var(--on-ink); }
+.footer__legal-meta { font-family: var(--font-mono); font-size: var(--fs-xs); }
+
+.footer__legal { display: flex; flex-wrap: wrap; gap: 0.35rem 1.25rem; margin-top: 0.9rem; font-size: var(--fs-sm); }
+.footer__legal a { text-decoration: underline; min-height: 44px; display: inline-flex; align-items: center; }
+
+.footer__disclosure,
+.footer__legal-note {
+  margin-top: 0.9rem;
+  font-size: var(--fs-xs);
+  color: var(--on-ink-2);
+}
+
+@media (min-width: 760px) {
+  .footer__grid { grid-template-columns: 1.6fr repeat(3, minmax(0, 1fr)); }
+}
+
+/* ==========================================================================
+   13 · PÁGINAS LEGALES
+   ========================================================================== */
+.page-legal { background-image: none; }
+
+.legal-head {
+  background: var(--surface);
+  border-bottom: 2px solid var(--ink);
+}
+
+.legal-head__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: var(--wrap-narrow);
+  min-height: var(--header-h);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.legal {
+  width: 100%;
+  max-width: var(--wrap-narrow);
+  margin-inline: auto;
+  padding: clamp(2rem, 1.5rem + 2vw, 3.5rem) var(--gutter) 4rem;
+}
+
+.legal__crumbs { margin-bottom: 1.25rem; font-size: var(--fs-sm); }
+.legal__crumbs ol { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.legal__crumbs li + li::before { content: "/"; margin-right: 0.4rem; color: var(--rule); }
+.legal__crumbs a { color: var(--text-3); }
+
+.legal__title { margin-bottom: 0.75rem; }
+
+.legal__updated {
+  margin-bottom: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+
+.legal__notice {
+  margin-bottom: 2rem;
+  padding: 1rem 1.15rem;
+  background: var(--accent);
+  border: 2px solid var(--ink);
+}
+
+.legal__body { max-width: 74ch; }
+.legal__body > * + * { margin-top: 1.1rem; }
+.legal__body h2 { margin-top: 2.25rem; font-size: var(--fs-xl); }
+.legal__body h2:first-child { margin-top: 0; }
+.legal__body p,
+.legal__body li { line-height: 1.75; color: var(--text-2); }
+
+.legal__highlight {
+  padding: 1rem 1.15rem;
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  border-left-width: 8px;
+}
+
+.legal__list { padding-left: 1.25rem; list-style: disc; }
+.legal__list li + li { margin-top: 0.45rem; }
+
+.legal__table-wrap { margin-top: 1.1rem; overflow-x: auto; }
+
+.legal__table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  font-size: var(--fs-sm);
+}
+
+.legal__table caption {
+  padding: 0.6rem 0.8rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--text-3);
+}
+
+.legal__table th,
+.legal__table td {
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+
+.legal__table th {
+  background: var(--surface-2);
+  border-bottom: 2px solid var(--ink);
+  font-weight: 700;
+}
+
+.legal__table-empty { text-align: center; color: var(--text-2); }
+
+.footer--legal { background: var(--ink); }
+.footer--legal .footer__inner {
+  width: 100%;
+  max-width: var(--wrap-narrow);
+  margin-inline: auto;
+  padding: 2.5rem var(--gutter);
+}
+
+/* ==========================================================================
+   14 · VISOR 3D DEL BLOQUE
+   --------------------------------------------------------------------------
+   Seis caras colocadas con `rotateY(θ) translateZ(media arista)`. El pivote
+   aplica la inclinación (`--rx`) y el bloque, el giro (`--ry`) y la
+   profundidad (`--z`). Las dos primeras variables las escribe `main.js` en el
+   pivote y heredan hacia abajo, así que el bloque las ve sin que el script
+   sepa nada del reparto.
+   ========================================================================== */
+.viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: var(--gutter);
+}
+
+.viewer__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(13, 39, 72, 0.55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.viewer__panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  width: min(100%, 32rem);
+  max-height: calc(100svh - var(--gutter) * 2);
+  overflow-y: auto;
+  padding: 1.1rem 1.2rem 1.25rem;
+  background: var(--surface);
+  border: 3px solid var(--ink);
+  box-shadow: var(--shadow-2);
+}
+
+.viewer__head { position: relative; padding-right: 3rem; }
+
+.viewer__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.viewer__eyebrow svg { width: 15px; height: 15px; flex: none; color: var(--brand-ink); }
+.viewer__ref { margin-left: auto; padding: 0.05rem 0.35rem; border: 1px solid var(--rule); }
+
+.viewer__title { margin-top: 0.3rem; font-size: var(--fs-xl); }
+
+.viewer__close {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  background: var(--surface);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+}
+
+.viewer__close:hover { background: var(--brand); color: var(--on-brand); }
+.viewer__close svg { width: 18px; height: 18px; }
+
+/* `perspective` va en la escena y no en el pivote: es la distancia al ojo, así
+   que pertenece a quien mira. Puesta en el pivote, girar el bloque cambiaría
+   su propia distancia focal. */
+.viewer__stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 15rem;
+  padding: 1.5rem 1rem;
+  overflow: hidden;
+  background: var(--surface-2);
+  border: 2px solid var(--ink);
+  perspective: 55rem;
+  perspective-origin: 50% 42%;
+  touch-action: none;
+  cursor: grab;
+}
+
+/* Suelo: la placa de tetones del visor, en punteado. */
+.viewer__grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle at 3px 3px, rgba(13, 39, 72, 0.22) 2.4px, transparent 2.5px);
+  background-size: 1.9rem 1.9rem;
+  mask-image: linear-gradient(180deg, transparent 44%, #000 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 44%, #000 100%);
+}
+
+.viewer__pivot {
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(calc(-1 * var(--rx, 22deg)));
+}
+
+.viewer__axis {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  text-align: center;
+  color: var(--text-3);
+  pointer-events: none;
+}
+
+/* --- El ladrillo ---
+   Medidas de un ladrillo 2x2: dos tetones de ancho y de fondo, y la mitad de
+   alto. */
+.viewer__brick {
+  position: relative;
+  width: var(--brick-w);
+  height: var(--brick-h);
+  transform-style: preserve-3d;
+  transform: rotateY(var(--ry, -28deg)) translateZ(var(--z, 0px));
+  will-change: transform;
+}
+
+/* Cada cara se ancla en el centro del ladrillo y se coloca con su MEDIA arista,
+   no con la del ancho: la cara de arriba es ancha y profunda, las laterales
+   son profundas y altas. Sin esto las seis caras miden lo mismo y el volumen
+   se descuadra al girar. `translate` se aplica antes que `transform`, así que
+   el centrado no interfiere con el giro. */
+.brick__face {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  width: var(--brick-w);
+  height: var(--brick-h);
+  transform-style: preserve-3d;
+  /* La arista marcada entre caras es lo que hace que se lea como un volumen y
+     no como tres rectángulos superpuestos. */
+  box-shadow: inset 0 0 0 1px rgba(13, 39, 72, 0.2);
+}
+
+.brick__face--front {
+  background: var(--accent);
+  transform: translateZ(calc(var(--brick-d) / 2));
+}
+
+.brick__face--back {
+  background: var(--accent-deep);
+  transform: rotateY(180deg) translateZ(calc(var(--brick-d) / 2));
+}
+
+.brick__face--left {
+  width: var(--brick-d);
+  background: var(--accent-deep);
+  transform: rotateY(-90deg) translateZ(calc(var(--brick-w) / 2));
+}
+
+.brick__face--right {
+  width: var(--brick-d);
+  background: var(--accent);
+  transform: rotateY(90deg) translateZ(calc(var(--brick-w) / 2));
+}
+
+/* Cara superior: `rotateX(-90deg)` es la que mira hacia +Y. Los tetones van
+   DENTRO de ella porque ya está tumbada y así se tumban con ella. */
+.brick__face--top {
+  height: var(--brick-d);
+  background: var(--accent);
+  transform: rotateX(-90deg) translateZ(calc(var(--brick-h) / 2));
+}
+
+.brick__face--under {
+  height: var(--brick-d);
+  background: var(--accent-deep);
+  transform: rotateX(90deg) translateZ(calc(var(--brick-h) / 2));
+}
+
+.brick__stud {
+  position: absolute;
+  width: var(--stud);
+  height: var(--stud);
+  border-radius: 3px;
+  background: var(--accent);
+  box-shadow: inset 0 0 0 2px rgba(13, 39, 72, 0.16);
+  transform: translate(-50%, -50%) translateZ(0.35rem);
+}
+
+.brick__stud--1 { left: 25%; top: 25%; }
+.brick__stud--2 { left: 75%; top: 25%; }
+.brick__stud--3 { left: 25%; top: 75%; }
+.brick__stud--4 { left: 75%; top: 75%; }
+
+.viewer__hint { font-size: var(--fs-xs); line-height: 1.5; color: var(--text-3); }
+
+.viewer__specs {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0;
+  padding-top: 0.8rem;
+  border-top: 2px solid var(--ink);
+}
+
+.viewer__spec dt {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.viewer__spec dd { margin: 0.2rem 0 0; font-weight: 700; }
+
+/* ==========================================================================
+   15 · ACCESIBILIDAD, MOVIMIENTO Y MEDIOS
+   ========================================================================== */
+:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Los controles con borde propio no necesitan el radio del outline. */
+.btn:focus-visible,
+.nav__link:focus-visible,
+.chip:focus-visible,
+.faq__q:focus-visible,
+.nav-toggle:focus-visible,
+.field__input:focus-visible,
+.field__select:focus-visible,
+.viewer__close:focus-visible { outline-offset: 3px; }
+
+/* El visor no tiene lectura en plano: sin JS se queda en `hidden` y con JS solo
+   aparece cuando alguien lo abre. No hace falta una regla para esconderlo. */
+.js .viewer:not([hidden]) { display: grid; }
+
+@media (max-width: 560px) {
+  .viewer__stage { min-height: 12rem; }
+  .viewer__specs { grid-template-columns: 1fr; }
+}
+
+@media (prefers-contrast: more) {
+  /* Los tres grises que se aclaran aquí son los que marcaban los bordes y el
+     texto secundario. Baajan hasta 4,7:1 o más sin tocar el croma de la marca:
+     subir el contraste no es excusa para meter un color nuevo. */
+  :root {
+    --bg: #ffffff;
+    --surface-2: #d8d8d5;
+    --line: #6e6e6e;
+    --rule: #4a4a4a;
+    --text-2: #2b2b2b;
+    --text-3: #3a3a3a;
+  }
+
+  .glass,
+  .faq__item,
+  .chip,
+  .setcard,
+  .themecard,
+  .levelcard,
+  .toolcard,
+  .tside,
+  .legal__table,
+  .legal__highlight {
+    border-width: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .glass,
+  .faq__item,
+  .chip,
+  .setcard,
+  .themecard,
+  .levelcard,
+  .toolcard,
+  .tside,
+  .field__input,
+  .field__select,
+  .btn {
+    border: 1px solid CanvasText;
+  }
+
+  .btn--brand,
+  .btn--primary {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .grad-mark,
+  mark { color: CanvasText; background: none; box-shadow: none; }
+
+  .setcard__pending { border-style: solid; }
+
+  .viewer__grid,
+  .nav-toggle__bars { display: none; }
+
+  .brick__face,
+  .brick__stud { border: 1px solid CanvasText; }
+}
+
+/* Las secciones altas del final no se pintan hasta que llegan a la ventana,
+   lo que reduce el trabajo inicial del navegador. */
+@media (min-width: 700px) {
+  #catalogo,
+  #transparencia,
+  #faq {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 900px;
+  }
+}
+
+@media print {
+  .header,
+  .nav-drawer,
+  .skip-link,
+  .filters,
+  .preloader,
+  .viewer { display: none !important; }
+
+  body {
+    background: #ffffff;
+    color: #000000;
+    background-image: none;
+  }
+
+  .section--alt,
+  .footer {
+    background: transparent;
+    color: #000000;
+  }
+}
+
+/* ==========================================================================
+   16 · PRELOADER DE LADRILLOS
+   ==========================================================================
+   Pantalla completa de carbón con un muro de ocho ladrillos que se levanta
+   pieza a pieza y el nombre encima. Solo en la portada y una vez por sesión.
+
+   Sustituye a la intro 3D, que montaba un ladrillo con Three.js. El cambio no
+   es solo de tecnología: el muro se levanta con `animation` de CSS y no con un
+   bucle de `requestAnimationFrame`, así que no hay ningún módulo que pueda no
+   cargarse. La intro anterior depended de que bajara 675 KB de Three.js de un
+   CDN, y todo el contrato de seguridad —el reloj de la <head>, el script de
+   `inert`, la red de seguridad del módulo— estaba ahí para cubrir ese
+   "y si no llega". Con la animación en CSS el peor caso ya no es que no se vea
+   la intro: es que se vea un poco más tarde.
+
+   El atributo `data-intro` lo pone el script de la <head> antes del primer
+   fotograma, así que el estado vive en el <html>, no en una clase. Hay tres
+   estados y todos son atributos —`tools/check.js` avisa de las clases del CSS
+   que no aparecen en el HTML, y este estado solo existe en memoria—:
+
+     `data-intro="pending"`  se ha decidido jugar. Se bloquea el scroll y se
+                             desactiva el contenido de detrás con `inert`. El
+                             overlay ya lo tapa de por sí, así que el <body>
+                             se pinta igual: si se escondiera, el primer
+                             pintado de la portada se iría al final del
+                             preloader y el LCP se hundiría (medido en la intro
+                             anterior: 472 ms → 8160 ms).
+     `data-intro="leaving"`  los ladrillos ya están levantados y solo se
+                             desvanece el fondo.
+     `data-intro="done"`     se enseña la web y entra el escalonado. El overlay
+                             ya no se pinta.
+     atributo ausente        terminó, falló o no tocaba. El sitio queda
+                             exactamente como estaba.
+
+   Por eso el overlay arranca en `display: none` y solo se pinta con el
+   atributo puesto: sin JavaScript nunca hay nada que esconder, y el reloj de
+   seguridad de la <head> retira el atributo aunque el módulo no llegue a
+   ejecutarse. No hay forma de que la web quede en blanco.
+
+   El retardo de cada ladrillo sale de reglas `nth-child` y no de un índice en
+   el HTML. Poner `style="--i: 3"` en el marcado habría dejado la secuencia
+   repartida entre el HTML y el CSS, que es exactamente el sitio donde se
+   rompe al reordenar el muro. Aquí las ocho piezas están escritas en orden, y
+   borrar una fila del HTML solo deja un hueco en la animación, no descuadra el
+   resto. */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  display: none;
+  place-items: center;
+  overflow: hidden;
+  background: var(--ink);
+  transition: opacity 380ms linear;
+}
+
+html[data-intro="pending"] .preloader,
+html[data-intro="leaving"] .preloader { display: grid; }
+
+html[data-intro="leaving"] .preloader { opacity: 0; }
+
+/* Mientras el preloader está puesto se bloquea el scroll y se desactiva el
+   contenido, pero NO se oculta el <body>.
+
+   Parecía lógico esconderlo con `visibility: hidden` y fue un error: el
+   navegador no cuenta como pintado lo que es invisible, así que el primer
+   pintado de la portada se retrasaba hasta que terminaba la intro. Medido en
+   este mismo sitio, el LCP pasaba de 472 ms a 8160 ms — ocho segundos, cuando
+   el umbral de "bueno" está en 2500 ms. Una animación decorativa no puede
+   costar una métrica de Core Web Vitals.
+
+   El overlay es opaco y ocupa todo el viewport, así que tapar la web no
+   necesita esconderla: basta con painted encima. Lo único que hay que impedir
+   es que se pueda interactuar con lo que hay debajo mientras está tapado, y
+   para eso está `inert`, que no toca el pintado.
+
+   Se escriben los dos estados porque `leaving` también cubre la pantalla: si se
+   desbloqueara en ese instante, la web recibiría clics y el foco mientras el
+   fondo aún no ha terminado de bajar. */
+html[data-intro="pending"] body,
+html[data-intro="leaving"] body {
+  overflow: hidden;
+}
+
+/* El muro y el nombre se centran como un bloque, no como dos filas sueltas de
+   la rejilla del overlay: en dos filas el hueco entre ellos lo fija el
+   `place-items` de cada una y no hay un solo sitio donde cambiarlo. Aquí el
+   `gap` manda y el muro puede sizeable sin que el nombre se mueva. */
+.preloader__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.75rem;
+}
+
+/* El muro: cuatro filas de dos, que es la proporción de un 2x4 visto de
+   frente. Cada ladrillo lleva sus dos tetones en `::before` y `::after` en vez
+   de en el marcado, porque son ocho piezas idénticas y escribirlos dos veces
+   por ladrillo serían dieciséis nodos que no significan nada para el lector de
+   pantalla —todo el overlay es `aria-hidden`— ni para el CSS. */
+.preloader__wall {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  width: min(11rem, 62vw);
+}
+
+.preloader-brick {
+  position: relative;
+  aspect-ratio: 2 / 1;
+  background: var(--brand);
+  border-radius: var(--radius-tile);
+  animation: brick-rise 400ms var(--ease) both;
+}
+
+/* Las tres filas de arriba en rojo y la última en azul: los dos colores de
+   marca presentes de golpe, que es lo que el muro tiene que decir antes de que
+   se lea una sola palabra. El tetón va en crema y no en blanco para que no se
+  parezca a un botón. */
+.preloader-brick::before,
+.preloader-brick::after {
+  content: '';
+  position: absolute;
+  top: 16%;
+  width: 24%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--on-ink);
+}
+
+.preloader-brick::before { left: 14%; }
+.preloader-brick::after { left: 62%; }
+
+/* La última fila en azul de estructura, no en rojo. Con el muro entero rojo el
+   nombre en amarillo encima queda como dos manchas del mismo tono; una fila de
+   otro color le da al nombre el contraste de escala que necesita para leerse
+   como titular y no como pie de foto. */
+.preloader-brick:nth-child(n + 7) { background: var(--blue); }
+
+.preloader-brick:nth-child(1) { animation-delay: 40ms; }
+.preloader-brick:nth-child(2) { animation-delay: 110ms; }
+.preloader-brick:nth-child(3) { animation-delay: 180ms; }
+.preloader-brick:nth-child(4) { animation-delay: 250ms; }
+.preloader-brick:nth-child(5) { animation-delay: 320ms; }
+.preloader-brick:nth-child(6) { animation-delay: 390ms; }
+.preloader-brick:nth-child(7) { animation-delay: 460ms; }
+.preloader-brick:nth-child(8) { animation-delay: 530ms; }
+
+/* El ladrillo entra desde abajo y girado. La rotación es lo que lo hace
+   "levantarse": si solo escalara, parecería que se encoge. */
+@keyframes brick-rise {
+  from { opacity: 0; transform: translateY(18px) rotate(-14deg); }
+  to { opacity: 1; transform: none; }
+}
+
+/* El nombre va en HTML y no dibujado: se lee nítido a cualquier resolución, con
+   la tipografía de verdad del sitio, y no hay motor que gaste geometría en
+   rotular nada. */
+.preloader-word {
+  margin: 0;
+  padding-inline: var(--gutter);
+  font-family: var(--font-hero);
+  font-size: clamp(2rem, 1rem + 7vw, 5rem);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: var(--on-ink);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 480ms var(--ease), transform 480ms var(--ease);
+}
+
+/* El módulo pone `data-visible` cuando el muro ya está levantado. Con
+   `transition` y no con `animation` porque el nombre solo entra y sale una vez;
+   el escalonado del hero, que sí se puede cortar a media carrera, va con
+   `animation` más abajo. */
+.preloader-word[data-visible] {
+  opacity: 1;
+  transform: none;
+}
+
+.preloader-word span:first-child { color: var(--accent); }
+
+/* La entrada escalonada de la web después del preloader. Se anima con
+   `animation` y no con `transition` a propósito: una animación que termina
+   devuelve el elemento a su valor natural, así que aunque se corte a media
+   ejecución el contenido queda en opacidad 1 y nadie se queda con la web
+   invisible. Además solo se pinta si `data-intro` llegó a ponerse, así que sin
+   el preloader —y en las otras ocho páginas— el contenido aparece sin más. */
+html[data-intro="done"] .hero__copy > *,
+html[data-intro="done"] .hero__media {
+  animation: intro-rise 620ms var(--ease) both;
+}
+
+html[data-intro="done"] .hero__copy > *:nth-child(1) { animation-delay: 60ms; }
+html[data-intro="done"] .hero__copy > *:nth-child(2) { animation-delay: 150ms; }
+html[data-intro="done"] .hero__copy > *:nth-child(3) { animation-delay: 240ms; }
+html[data-intro="done"] .hero__copy > *:nth-child(4) { animation-delay: 330ms; }
+html[data-intro="done"] .hero__actions { animation-delay: 420ms; }
+html[data-intro="done"] .hero__media { animation-delay: 300ms; }
+
+@keyframes intro-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Con `prefers-reduced-motion` el preloader no llega a jugarse (lo decide el
+   script de la <head>), pero las reglas se ponen igualmente, y no por simetría:
+   alguien puede desactivarlo con el sistema operativo mientras el muro ya está
+   a medio levantar. Sin esto, `animation ... both` dejaría los ladrillos que
+   aún no habían entrado congelados en opacidad 0 y el overlay se iría
+   enseñando una pantalla a medio montar. Con el movimiento reducido el muro se
+   enseña entero desde el principio, sin transición. */
+@media (prefers-reduced-motion: reduce) {
+  .preloader-brick { animation: none; }
+  .preloader-word { opacity: 1; transform: none; transition: none; }
+}
+
+/* ==========================================================================
+   17 · BLOQUES DEL DISEÑO DE REFERENCIA
+   ==========================================================================
+   Los bloques que se han Incorporado del diseño de referencia: la transición a
+   carbón, la marquesina diagonal, el revelado gigante, la rejilla de polaroids y
+   las tiendas.
+
+   Todos se montan sobre las primitivas que ya existen —`.section--alt` para el
+   carbón, `.wrap` para el ancho, `.section-head` para el encabezado— y no
+   repiten ninguna. La razón es que las fichas y los botones ya llevan el borde
+   de 2 px y la sombra dura: un bloque nuevo que dibuje su propia superficie
+   acaba teniendo dos radios y dos sombras distintas en la misma pantalla.
+
+   Y todos arrancan visibles. Es la misma regla que `.reveal` sigue desde el
+   principio y por el mismo motivo: si una animación depende de que un script la
+   dispare, el fallo es que el bloque no aparece nunca, y eso no se arregla con
+un mensaje en consola. Aquí las animaciones se montan al revés de lo
+   habitual —el estado inicial es el bueno y la entrada invierte la cosa con
+   `animation`, que al terminar devuelve el elemento a su valor natural—, así
+   que si `main.js` no llegara a ejecutarse el bloque se ve igualmente, solo
+   que sin la entrada. */
+
+/* --- La textura de tetones, suelta ---------------------------------------
+   El patrón estaba escrito dentro de `.hero--catalog` y hacía falta en tres
+   sitios más con dos fondos distintos. Se extrae aquí como utilidad para que
+   el paso y el tamaño del tetón sean la misma decisión en todas partes: si el
+   patrón se dibuja con dos separaciones distintas, el ojo lee dos materiales
+   en lugar de uno.
+
+   El color no viene del propio selector sino de `--stud-tint`, que está
+   declarado en `:root` con valor por defecto. Así el tetón es siempre «el
+   fondo menos un punto», y sobre carbón se pone claro con una sola
+   declaración en vez de duplicar el `radial-gradient`.
+
+   El nombre lleva el sufijo a propósito: `--stud` ya existe desde el visor 3D
+   y es una longitud, la del tetón del ladrillo. Reutilizarlo para un color
+   haría que un `.studs` alrededor de un visor le pidiera un tamaño de tetón y
+   le devolviera un color. */
+.studs {
+  background-image: radial-gradient(circle at 4px 4px, var(--stud-tint) 4px, transparent 4.2px);
+  background-size: 32px 32px;
+}
+
+/* Sobre carbón el tetón se aclara. El valor es opaco y no un blanco al 13 %:
+   un punto blanco translúcido sobre casi negro sube demasiado y el carbón deja
+   de leerse como una superficie lisa. */
+.studs--dark { --stud-tint: rgba(255, 244, 220, 0.09); }
+
+/* --- Transición a carbón --------------------------------------------------
+   `.section--alt` ya existía y ya hacía el cambio de variables de ficha. Lo que
+   faltaba era el recurso de la transición: el diseño de referencia no corta de
+   golpe de la crema al carbón, sino que pasa por una banda de piezas. Aquí se
+   resuelve con el patrón de tetones, que es exactamente el recurso que ya usan
+   el hero y el preloader, en vez de inventar una banda nueva.
+
+   No lleva `padding-block`: el padding de `.section` va en `.section--alt` y
+   duplicarlo aquí abriría una diferencia de 2 rem respecto a las demás
+   secciones oscuras, que es justo lo que el recurso no puede permitirse. */
+.section--dark {
+  position: relative;
+  overflow: hidden;
+}
+
+/* La banda son tres filas de tetones que se cortan por arriba y por abajo con
+   un degradado a transparente. Sin el degradado la franja acaba en un canto
+   recto de color sólido y se lee como un borde, no como una transición. */
+.section--dark::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: -1.5rem;
+  height: 3rem;
+  background-image: radial-gradient(circle at 4px 4px, var(--stud-tint) 4px, transparent 4.2px);
+  background-size: 32px 32px;
+  pointer-events: none;
+}
+
+/* --- Marquesina diagonal --------------------------------------------------
+   El diseño la lleva inclinada, con el texto arrastrando en una sola dirección
+   sin Pause. Aquí también, pero con dos diferencias que no son gusto:
+
+   La primera es que la pista se duplica en el marcado y se desplaza la mitad,
+   con un salto exacto. Es el truco estándar para un bucle infinito sin costura,
+   pero solo funciona si las dos copias son idénticas y el salto es justo la
+   mitad de la pista; por eso `shops`/`items` van en el mismo orden y por eso el
+   desplazamiento se hace con una `animation` y no desde JS.
+
+   La segunda es que el texto se sale del papel. Va en Anton y en mayúsculas, y
+   la caja se recorta. Es lo que hace el bucle infinito: si la caja no se
+   recorta, la marquesina no repite, y se nota en el último elemento. */
+.marquee {
+  overflow: hidden;
+  background: var(--accent);
+  border-block: 2px solid var(--ink);
+  transform: rotate(-2.5deg);
+  /* El giro magnifica la altura en los laterales, y sin estos dos píxeles de
+     margen los extremos se salen de la pantalla. Se agranda en lugar de quitar
+     el giro: el sitio ya tiene secciones inclinadas y un texto plano entre dos
+     bandas torcidas se leería como un error de impresión. */
+  margin-block: 0.5rem;
+}
+
+.marquee__track {
+  display: flex;
+  width: max-content;
+  gap: 1.5rem;
+  padding-block: 0.55rem;
+  animation: marquee-slide 26s linear infinite;
+}
+
+/* Cada media vuelta del bucle es un grupo. El `gap` va en la pista y no aquí,
+   porque el hueco tiene que ser el mismo entre el último motivo del primer
+   grupo y el primero del segundo: si estuviera dentro del grupo, el salto de
+   -50% caería en medio del hueco y la serie no encajaría consigo misma.
+
+   El grupo no necesita `flex: none` porque `width: max-content` en la pista
+   deja que cada hijo tome su tamaño natural, que es justo lo que se necesita
+   para que -50% sea la mitad exacta de la pista. */
+.marquee__set {
+  display: flex;
+  align-items: baseline;
+  gap: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.marquee__item {
+  font-family: var(--font-hero);
+  font-size: clamp(1.35rem, 1rem + 1.6vw, 2.1rem);
+  line-height: 1.1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.marquee__item span { color: var(--brand); }
+
+/* Un solo ciclo completo por vuelta. La distancia la fija el propio navegador
+   con `-100%` sobre una pista que son dos copias de la misma serie, así que
+   cambiar el número de elementos de la marquesina no descuadra nada. */
+@keyframes marquee-slide {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Con el movimiento reducido la pista se queda quieta. Una marquesina es
+   movimiento continuo, y el problema no es que distraiga —no se puede leer
+   mientras se mueve, y eso ya lo desaconseja WCAG 2.2.2 por sí solo— sino que
+   `infinite` no termina nunca: en `prefers-reduced-motion` no hay a qué atenerse
+   para parar, y una animación sin fin no se puede desactivar desde el sistema. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee__track { animation: none; }
+}
+
+/* --- Revelado gigante ----------------------------------------------------
+   Un titular del tamaño de la pantalla que asoma por detrás del contenido al
+   entrar en la vista. En el diseño es decorativo puro; aquí también, y por eso
+   va `aria-hidden`: el texto de verdad está en el `h2` de al lado.
+
+   Con `animation` y no con `transition`, y empezando en el estado bueno: si la
+   clase `.is-in` no llegara —sin JavaScript, sin `IntersectionObserver`, o con
+   el bloque ya en pantalla al cargar— el titular se ve grande y quieto, que es
+   lo aceptable. Al revés, con la transición, habría que empezar en opacidad 0
+   para tener algo que animar, y entonces el fallo deja de ser invisible. */
+.reveal-giant {
+  margin: 0;
+  font-family: var(--font-hero);
+  font-size: clamp(3rem, 1rem + 12vw, 11rem);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--blue);
+  opacity: 0.22;
+  /* Recorta el desbordamiento lateral de una caja tan ancha. Sin esto, el
+     titular ensancha la página y aparece una barra horizontal en móvil. */
+  overflow-wrap: anywhere;
+}
+
+/* La entrada sube y se asienta. `both` es lo que permite que la animación
+  substringga el estado inicial durante la duración; al terminar el elemento
+   vuelve a su valor natural, que es el estado bueno. */
+.reveal-giant.is-in { animation: giant-in 900ms var(--ease) both; }
+
+@keyframes giant-in {
+  from { opacity: 0; transform: translateY(0.35em) scale(0.94); }
+  to { opacity: 0.22; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-giant.is-in { animation: none; }
+}
+
+/* --- Polaroids ------------------------------------------------------------
+   Una rejilla de fotografías ligeramente giradas, cada una con su nombre en
+   «letra de máquina» debajo. La rotación va en el marcado, una por foto, y no
+   en el nth-child del CSS: es la única forma de que dos fotos no salgan con el
+   mismo ángulo, y el ángulo es lo que hace que la rejilla parezca una mesa de
+   mesa y no una tabla.
+
+   El marco es crema y no blanco a propósito: en una rejilla de fotos blancas
+   sobre fondo blanco las imágenes se separan solo por la sombra, y una sombra
+   dura de 6 px no basta para ocho fotos. El borde de 2 px sí las separa. */
+.polaroid-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+  gap: 1.5rem;
+  padding-top: 1rem;
+}
+
+.polaroid {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.6rem 0.6rem 0.75rem;
+  background: var(--surface);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-2);
+  transform: rotate(var(--tilt));
+  transition: transform 260ms var(--ease), box-shadow 260ms var(--ease);
+}
+
+.polaroid:hover,
+.polaroid:focus-within { transform: rotate(0deg) translateY(-4px); box-shadow: var(--shadow-3); }
+
+/* La foto es un `aspect-ratio` fijo en vez de la altura de la imagen: ocho
+   fotos de proporciones distintas en una rejilla sin altura fija dejan huecos
+   que se rompen al girar cada marco.
+
+   La proporción va en el marco y no en la imagen porque el marco es el
+   `[data-img]` que sustituye el archivo por un recuadro cuando la foto no está.
+   Si el alto lo tuviera la imagen, el hueco del esqueleto sería de cero y el
+   marco se cerraría mientras carga. */
+.polaroid__frame {
+  aspect-ratio: 1 / 1;
+  border-radius: calc(var(--radius-card) - 6px);
+  border: 2px solid var(--card-line);
+}
+
+.polaroid__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--surface-2);
+  border-radius: calc(var(--radius-card) - 8px);
+}
+
+.polaroid__cap {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  text-align: center;
+}
+
+/* --- Tiendas --------------------------------------------------------------
+   El mapa del diseño es una imagen. Aquí no hay ninguna, así que el bloque se
+   resuelve con una lista de tiendas sobre un plano dibujado en CSS: la
+   rejilla de calles y el río. Es menos bonito y no miente —no enseña una
+   ubicación que no existe—.
+
+   El plano es decorativo y va detrás, con `aria-hidden`: la información que se
+   necesita está en las direcciones de la lista, que es texto y se puede leer,
+   buscar y traducir. Un mapa que solo se puede leer mirando, en un sitio que se
+   juega el SEO local, es peor que no tener mapa. */
+.shops { position: relative; }
+
+.shops__map {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: var(--surface-2);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+/* Las calles: una rejilla vertical y otra horizontal, y el río como una banda
+   curva. Es un plano esquemático, no un mapa: no hay ni un solo topónimo, ni
+   una escala, ni una rosa de los vientos, y no debe parecer que los hay. */
+.shops__map::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(90deg, var(--line) 0 2px, transparent 2px 3.5rem),
+    repeating-linear-gradient(0deg, var(--line) 0 2px, transparent 2px 2.75rem);
+  opacity: 0.85;
+}
+
+/* Los marcadores de las tiendas, en los tres colores de marca. Salen del
+   marcado —uno por tienda— y no del CSS: su posición es un dato, no un estilo. */
+.shops__pin {
+  position: absolute;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.shops__pin--a { background: var(--brand); }
+.shops__pin--b { background: var(--accent); }
+.shops__pin--c { background: var(--blue); }
+
+.shops__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+.shop {
+  padding: 1.1rem 1.25rem;
+  background: var(--card-bg);
+  border: 2px solid var(--card-line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-1);
+}
+
+.shop__name { margin: 0 0 0.2rem; font-family: var(--font-display); font-size: var(--fs-md); }
+
+/* La etiqueta de «dato de ejemplo» va dentro del `h3` a propósito: si fuera un
+   `p` suelto, el avisodependería del orden del DOM y el encabezado de la
+   tienda —que es lo que lee primero quien llega con un lector de pantalla—
+   volvería a decir «Centro» a secas. Dentro del título forma parte del nombre
+   y no se pierde al recorrer la lista.
+
+   El tamaño y el peso son los del texto que acompaña al título, no los del
+   `h3`: el aviso tiene que leerse sin pesar más fuerte que el nombre al que
+   acompaña.
+
+   `--fs-xs` es el tamaño más pequeño que hay. Con `clamp()`, el mínimo del
+   rango es el de pantallas anchas, así que la etiqueta mide lo mismo en un
+   móvil de 360 px que en un monitor de 1920.
+
+   El borde es de 1 px, no de 2 como el de las tarjetas. Un borde de 2 px en
+   texto de este tamaño duplica el peso visual del marco y la etiqueta acaba
+   pareciendo un botón, que es justo lo que no es. */
+.shop__tag {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.15rem 0.45rem;
+  vertical-align: middle;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--card-dim);
+  background: var(--surface-2);
+  border: 1px solid var(--card-line);
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+/* La dirección va en la tipografía de máquina: es un dato que se copia y se
+   pega a un mapa, y no un texto para leer. */
+.shop__addr {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--card-dim);
+}
+
+.shop__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  font-size: var(--fs-sm);
+  color: var(--card-dim);
+}
